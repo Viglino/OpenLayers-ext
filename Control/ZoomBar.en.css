@@ -1,0 +1,19 @@
+/* EN : Label content */
+.olControlZoomBar .zoom0:hover:before, .olControlZoomBar .zoom1:hover:before, .olControlZoomBar .zoom2:hover:before, .olControlZoomBar .zoom3:hover:before, .olControlZoomBar .zoom4:hover:before {
+    content: "Word";
+}
+.olControlZoomBar .zoom5:hover:before, .olControlZoomBar .zoom6:hover:before, .olControlZoomBar .zoom7:hover:before, .olControlZoomBar .zoom8:hover:before {
+    content: "State";
+}
+.olControlZoomBar .zoom9:hover:before, .olControlZoomBar .zoom10:hover:before, .olControlZoomBar .zoom11:hover:before {
+    content: "Country";
+}
+.olControlZoomBar .zoom12:hover:before, .olControlZoomBar .zoom13:hover:before, .olControlZoomBar .zoom14:hover:before, .olControlZoomBar .zoom15:hover:before {
+    content: "Town";
+}
+.olControlZoomBar .zoom16:hover:before, .olControlZoomBar .zoom17:hover:before, .olControlZoomBar .zoom18:hover:before {
+    content: "Street";
+}
+.olControlZoomBar .zoom19:hover:before, .olControlZoomBar .zoom20:hover:before {
+    content: "House";
+}

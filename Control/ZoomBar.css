@@ -1,0 +1,124 @@
+.olControlZoomBar
+{	opacity: 0.8;
+	filter: alpha(opacity=80);
+	left:4px;
+	top:60px;
+}
+.olControlZoomBar:hover
+{	opacity: 1;
+	filter: alpha(opacity=100);
+}
+
+/* Zoomlevel bars */
+.olControlZoomBar .zoombarin, 
+.olControlZoomBar .zoombarout, 
+.olControlZoomBar .zoomlevel 
+{   background-color: #369;
+    box-shadow: 0 0 6px 3px #ffffff;
+    cursor: pointer;
+    opacity: 0.5;
+    position: absolute;
+	transition:opacity 0.3s ease-in-out;
+}
+/* Zoom in and out button */
+.olControlZoomBar .zoombarin,
+.olControlZoomBar .zoombarout
+{	opacity:1;
+	color: white;
+	display: block;
+	font-family: 'Lucida Grande',Verdana,Geneva,Lucida,Arial,Helvetica,sans-serif;
+	font-size: 18px;
+	font-weight: bold;
+	height: 18px;
+	line-height: 15px;
+	margin: 0;
+	padding: 0;
+	text-align: center;
+	text-decoration: none;
+	border-radius:3px
+}
+
+/* div to avoid blinking when hover */
+.olControlZoomBar .zoomlevel:after {
+    background: none repeat scroll 0 0 rgba(0, 0, 0, 0);
+    content: "";
+    height: 2px;
+    position: absolute;
+    right: 0;
+    top: 100%;
+    width: 100%;
+}
+
+/* Select and hover style */
+.olControlZoomBar .zoomlevel.select {
+    opacity: 1;
+}
+.olControlZoomBar .zoomlevel:hover {
+    box-shadow: 0 0 6px 4px #ffffff;
+    opacity: 1;
+}
+
+/* Label on hover */
+.olControlZoomBar .zoomlevel:hover:before {
+    background: none repeat scroll 0 0 #ffd800;
+    content: "Monde";
+    display: block;
+    font-size: 16px;
+    padding: 0 5px;
+    position: absolute;
+    left: 100%;
+    top: -50%;
+    z-index: 1;
+	margin:0 5px;
+}
+.olControlZoomBar .zoomlevel:hover:after {
+    background: none repeat scroll 0 0 rgba(0, 0, 0, 0);
+    border-bottom: 6px solid rgba(0, 0, 0, 0);
+    border-right: 7px solid #ffd800;
+    border-top: 6px solid rgba(0, 0, 0, 0);
+    content: "";
+    display: block;
+    right: -5px;
+    position: absolute;
+    top: -25%;
+    z-index: 1;
+}
+
+/* Right alignement */
+.olControlZoomBar.olAlignRight
+{	left:auto;
+	right:4px;
+}
+.olControlZoomBar.olAlignRight .zoombarin, 
+.olControlZoomBar.olAlignRight .zoombarout, 
+.olControlZoomBar.olAlignRight .zoomlevel
+{	left:auto!important;
+	right:0;
+}
+.olControlZoomBar.olAlignRight .zoomlevel:hover:before
+{	right:100%;
+	left:auto;
+}
+.olControlZoomBar.olAlignRight .zoomlevel:hover:after
+{	left:-5px;
+	right:auto;
+    border-left: 7px solid #ffd800;
+	border-right:0;
+}
+
+/* Label content */
+.olControlZoomBar .zoom5:hover:before, .olControlZoomBar .zoom6:hover:before, .olControlZoomBar .zoom7:hover:before, .olControlZoomBar .zoom8:hover:before {
+    content: "Pays";
+}
+.olControlZoomBar .zoom9:hover:before, .olControlZoomBar .zoom10:hover:before, .olControlZoomBar .zoom11:hover:before {
+    content: "Dep.";
+}
+.olControlZoomBar .zoom12:hover:before, .olControlZoomBar .zoom13:hover:before, .olControlZoomBar .zoom14:hover:before, .olControlZoomBar .zoom15:hover:before {
+    content: "Ville";
+}
+.olControlZoomBar .zoom16:hover:before, .olControlZoomBar .zoom17:hover:before, .olControlZoomBar .zoom18:hover:before {
+    content: "Rue";
+}
+.olControlZoomBar .zoom19:hover:before, .olControlZoomBar .zoom20:hover:before {
+    content: "Maison";
+}

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<title>OpenLayers-Ext Example</title>
+	<link rel="stylesheet" href="http://openlayers.org/dev/theme/default/style.css" type="text/css">
+	<script src="http://openlayers.org/dev/OpenLayers.js"></script>
+
+	<link rel="stylesheet" href="../Control/FullPage.css" type="text/css">
+	<script src="../Control/FullPage.js"></script>
+
+	<link rel="stylesheet" href="../Control/ZoomBar.css" type="text/css">
+	<link rel="stylesheet" href="../Control/ZoomBar.en.css" type="text/css">
+	<script src="../Control/ZoomBar.js"></script>
+
+	<style>
+		body { font:1em Helvetica,Arial,sans-serif; }
+		h1 { color:#369; margin:0.5em 0 0.2em }
+		#tags { color:#69F; font-size:0.9em; }
+		p { margin: 0.3em 0; }
+		p.title { color:#369; font-weight:bold; }
+		#map { background:#fff; float:left; }
+		#options { margin:0.5em; float:left; }
+		#docs { clear:both; background:#e3e6e9; padding:0.5em; margin:0.5em 0; }
+		.olControlAttribution
+		{	bottom:0;
+			background:rgba(255,255,255,0.6);
+			padding: 0 0.5em;
+		}
+	</style>
+
+	<script type="text/javascript">
+		var map, zbarCtrl;
+		function init(){
+			map = new OpenLayers.Map('map');
+
+			var mapbox = new OpenLayers.Layer.XYZ(
+				"Natural Earth",
+				[	"http://a.tiles.mapbox.com/v3/mapbox.natural-earth-hypso-bathy/${z}/${x}/${y}.png",
+					"http://b.tiles.mapbox.com/v3/mapbox.natural-earth-hypso-bathy/${z}/${x}/${y}.png",
+					"http://c.tiles.mapbox.com/v3/mapbox.natural-earth-hypso-bathy/${z}/${x}/${y}.png",
+					"http://d.tiles.mapbox.com/v3/mapbox.natural-earth-hypso-bathy/${z}/${x}/${y}.png"
+				], {
+					attribution: "Tiles &copy; <a href='http://mapbox.com/'>MapBox</a>",
+					sphericalMercator: true,
+					wrapDateLine: true,
+					numZoomLevels: 5
+				}
+			);
+
+			var osm = new OpenLayers.Layer.OSM();
+
+			map.addLayers([osm, mapbox]);
+
+			map.addControl(new OpenLayers.Control.FullPage());
+			zbarCtrl = new OpenLayers.Control.ZoomBar();
+			map.addControl(zbarCtrl);
+			map.addControl(new OpenLayers.Control.LayerSwitcher());
+
+			map.zoomToMaxExtent();
+		}
+	</script>
+</head>
+    <body onload="init()">
+        <h1 id="title">OpenLayers-Ext Example</h1>
+
+        <div id="tags">
+            control, fullpage, zoombar
+        </div>
+
+        <p id="shortdesc">
+          Shows the use of FullPage and ZoomBar controls.
+        </p>
+
+        <div id="map" class="smallmap" style="width:640px; height:400px;"></div>
+
+		<div id="options">
+			<p class="title">ZoomBar</p>
+			<input id="align" type="checkbox" onchange="zbarCtrl.alignRight=this.checked; zbarCtrl.redraw();" /> <label for="align">Align right</label><br />
+			<input id="zbutton" type="checkbox" onchange="zbarCtrl.zoomInOut=this.checked; zbarCtrl.redraw();" /> <label for="zbutton">Zoom +/- buttons</label><br />
+			<input id="fwidth" type="checkbox" onchange="zbarCtrl.btSize.w = (this.checked ? 20:0); zbarCtrl.redraw();" /> <label for="fwidth">Fixed width</label><br />
+			<label>Curve : </label>
+			<input id="exp" name="curve" type="radio" CHECKED onchange="zbarCtrl.curve = 'exp'; zbarCtrl.redraw();" /> <label for="exp">exp</label>
+			<input id="linear" name="curve" type="radio" onchange="zbarCtrl.curve = 'linear'; zbarCtrl.redraw();" /> <label for="linear">linear</label>
+			<input id="sinus" name="curve" type="radio" onchange="zbarCtrl.curve = 'sinus'; zbarCtrl.redraw();" /> <label for="sinus">sinus</label>
+		</div>
+		<div id="docs">
+			<p>
+			The FullPageButton control is a very simple push-button.
+			When clicked, it adds a olFullPageMap style to the map (ie. css position : static + top,left,bottom,right at 0).
+			</p>
+			<p>
+			The ZoomBar is a visible control composed of a set off button to switch zoom level.
+			</p> 
+		</div>
+    </body>
+</html>
