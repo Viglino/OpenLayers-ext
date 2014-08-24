@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<title>OpenLayers Bouncing markers</title>
+	<link rel="stylesheet" href="http://openlayers.org/dev/theme/default/style.css" type="text/css">
+	<script src="http://openlayers.org/dev/OpenLayers.debug.js"></script>
+
+	<link rel="stylesheet" href="../Control/FullPage.css" type="text/css">
+	<script src="../Control/FullPage.js"></script>
+	<script src="../Control/Click.js"></script>
+
+	<script src="../bouncingMarker.js"></script>
+
+	<style>
+		body { font:1em Helvetica,Arial,sans-serif; }
+		h1 { color:#369; margin:0.5em 0 0.2em }
+		#tags { color:#69F; font-size:0.9em; }
+		p { margin: 0.5em 0; }
+		p.title { color:#369; font-weight:bold; }
+		#map { background:#fff; float:left; }
+		#options { margin:0.5em; float:left; }
+		#options p { margin:0 0 1em; }
+		#docs { background:#e3e6e9; padding:0.5em; margin:0.5em 0; }
+		.olControlAttribution
+		{	bottom:0;
+			background:rgba(255,255,255,0.6);
+			padding: 0 0.5em;
+		}
+	</style>
+
+	<script type="text/javascript">
+		var map, mlayer;
+		var mode='drop';
+		var dragmode ='bounce';
+		
+		function dropFeatures(m)
+		{	mode = m;
+			mlayer.removeAllFeatures();
+			var b = map.calculateBounds();
+			for (var i = 0; i < 3; i++) 
+			{	setTimeout (function()
+				{	var r1 = Math.random();
+					var r2 = Math.random();
+					var px = b.left + (b.right-b.left) *r1 ; 
+					var py = b.bottom + (b.top-b.bottom) *r2 ; 
+					var f = new OpenLayers.Feature.Vector( new OpenLayers.Geometry.Point(px, py) );
+					mlayer.addFeatures(f);
+					OpenLayers.bouncingMarker(f,{ mode:mode });
+				}, 300*i);
+			}
+		}
+		
+		function init(){
+			map = new OpenLayers.Map('map');
+
+			var mapbox = new OpenLayers.Layer.XYZ(
+				"Natural Earth",
+				[	"http://a.tiles.mapbox.com/v3/mapbox.natural-earth-hypso-bathy/${z}/${x}/${y}.png",
+					"http://b.tiles.mapbox.com/v3/mapbox.natural-earth-hypso-bathy/${z}/${x}/${y}.png",
+					"http://c.tiles.mapbox.com/v3/mapbox.natural-earth-hypso-bathy/${z}/${x}/${y}.png",
+					"http://d.tiles.mapbox.com/v3/mapbox.natural-earth-hypso-bathy/${z}/${x}/${y}.png"
+				], {
+					attribution: "Tiles &copy; <a href='http://mapbox.com/'>MapBox</a>",
+					sphericalMercator: true,
+					wrapDateLine: true,
+					numZoomLevels: 5
+				}
+			);
+
+			var osm = new OpenLayers.Layer.OSM();
+			
+			// Vector layer to 
+			var style = new OpenLayers.Style
+			({	pointRadius: 18,
+				externalGraphic: "img/pins.png",
+				backgroundGraphic: "img/pinsback.png",
+				graphicYOffset:-36,
+				backgroundXOffset: 0,
+				backgroundYOffset: -24,
+				graphicZIndex: 11,
+				backgroundGraphicZIndex: 10
+			});
+			map.addLayers([mapbox, osm]);
+
+			mlayer = new OpenLayers.Layer.Vector ("Markers",
+			{	visibility:true,
+				rendererOptions: {yOrdering: true},
+				styleMap: new OpenLayers.StyleMap
+				({	"default": style,
+					"select": 
+					{	pointRadius: 24,
+						graphicYOffset:-60,
+						backgroundYOffset: -32
+					}
+				})
+			});
+			map.addLayer(mlayer);
+
+			map.addControl(new OpenLayers.Control.FullPage());
+			map.addControl(new OpenLayers.Control.LayerSwitcher());
+
+			// Drop a marker when click
+			var clicCtrl = new OpenLayers.Control.Click
+			({	//'keyMask' : OpenLayers.Handler.MOD_CTRL, 
+				onclick: function (lonlat) 
+				{	if (mlayer.features.length>10) mlayer.removeAllFeatures();
+					var f = new OpenLayers.Feature.Vector( new OpenLayers.Geometry.Point(lonlat.lon, lonlat.lat), {} )
+					mlayer.addFeatures (f);
+					OpenLayers.bouncingMarker (f,{ mode:mode });
+				}
+			});
+			map.addControl (clicCtrl);
+			clicCtrl.activate();
+
+			var dragCtrl = new OpenLayers.Control.DragFeature
+			(	mlayer,
+			{	onComplete: function (f)
+				{	OpenLayers.bouncingMarker (f, { mode: dragmode });
+				}
+			});
+			map.addControl (dragCtrl);
+			dragCtrl.activate();
+
+			map.zoomToMaxExtent();
+		}
+	</script>
+</head>
+    <body onload="init()">
+        <h1 id="title">OpenLayers Bouncing markers</h1>
+
+        <div id="tags">
+            maker, bounce, animation
+        </div>
+
+		<div id="docs">
+			<p id="shortdesc">
+			  Add animations method on point features.
+			  The animation static methods are designed to be used with externalGraphic (and backgroundGraphic). 
+			  It will modify the graphicOffset of the marker.
+			</p>
+			<p>
+				The following example creates new features using a drop animation. <br />
+				It adds a bouncy effect when moving the feature.
+			</p>
+		</div>
+		
+        <div id="map" class="smallmap" style="width:640px; height:400px;"></div>
+        
+		<div id="options">
+			<p>
+				Feature can drop from the top of the map with a bounce or an elastic effect.<br />
+				Feature can slide from the left with a bounce or an elastic effect.<br />
+				Feature can be thrown from the top-left corner of the map.<br />
+			</p>
+			<p>Add new features on the map : <br />
+				<button onclick="dropFeatures('drop');">Drop!</button>
+				<button onclick="dropFeatures('fall');">Fall!</button>
+				<button onclick="dropFeatures('slide');">Slide!</button>
+				<button onclick="dropFeatures('slip');">Slip!</button>
+				<button onclick="dropFeatures('throw');">Throw!</button>
+				<br />
+				<small>Click on the map to add new features!</small>
+			</p>
+			<p>
+				Animate the feature when drag it :<br />
+				<input id=bounce name=drag type='radio' checked onchange="dragmode= 'bounce';" /><label for=bounce> Bounce</label>
+				<input id=shake name=drag type='radio' onchange="dragmode = 'shake';" /><label for=shake> Shake</label>
+				<br />
+				<small>Drag feature on the map to look the effect!</small>
+			</p>
+		</div>
+
+    </body>
+</html>
