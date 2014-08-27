@@ -126,7 +126,7 @@ OpenLayers.Control.ZoomBar = OpenLayers.Class(OpenLayers.Control, {
 		}
 
 		for (var i=zoomsToEnd-1; i>=minZoom; i--)
-		{	btn = this._addButton("zoom"+i, px.add(0,(sz.h+2)*(zoomsToEnd-i-1)+2), {w: sz.w||f(i+offset), h: sz.h});
+		{	btn = this._addButton("zoom"+(i+offset), px.add(0,(sz.h+2)*(zoomsToEnd-i-1)+2), {w: sz.w||f(i+offset), h: sz.h});
 			OpenLayers.Element.addClass(btn, 'zoomlevel');
 		}
 
