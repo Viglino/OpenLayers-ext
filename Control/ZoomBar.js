@@ -194,7 +194,7 @@ OpenLayers.Control.ZoomBar = OpenLayers.Class(OpenLayers.Control, {
 		if (btn.action)
 		{	var zaction = btn.action.match(/^zoom(\d+)/);
 			if (zaction && zaction.length>1)
-			{	var zoom = Number(zaction[1]);
+			{	var zoom = Number(zaction[1])-this.map.baseLayer.zoomOffset;
 				this.map.zoomTo(zoom);
 			}
 			else switch (btn.action) 
@@ -213,7 +213,7 @@ OpenLayers.Control.ZoomBar = OpenLayers.Class(OpenLayers.Control, {
     * Change the location of the select to match the current zoom level.
     */
     moveZoomBar:function() 
-	{	var zaction = "zoom"+this.map.getZoom();
+	{	var zaction = "zoom"+(this.map.getZoom()+this.map.baseLayer.zoomOffset);
 		for (var i=0; i<this.buttons.length; i++) 
 		{	if (this.buttons[i].action == zaction) OpenLayers.Element.addClass(this.buttons[i], 'select');
 			else OpenLayers.Element.removeClass(this.buttons[i], 'select');
