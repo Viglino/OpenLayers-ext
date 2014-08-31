@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<title>OpenLayers-Ext Example</title>
+	<link rel="stylesheet" href="../../openlayers/lib/theme/default/style.css" type="text/css">
+	<script src="../../openlayers/lib/OpenLayers.js"></script>
+
+	<link rel="stylesheet" href="../Control/FullPage.css" type="text/css">
+	<script src="../Control/FullPage.js"></script>
+
+	<link rel="stylesheet" href="../Popup/Styled.css" type="text/css">
+	<script src="../Popup/Styled.js"></script>
+
+	<style>
+		body { font:1em Helvetica,Arial,sans-serif; }
+		h1 { color:#369; margin:0.5em 0 0.2em }
+		#tags { color:#69F; font-size:0.9em; }
+		p { margin: 0.3em 0; }
+		p.title { color:#369; font-weight:bold; }
+		#map { background:#fff; float:left; border-right:10px solid transparent; }
+		#options { margin:0.5em; display:table; }
+		#docs { background:#e3e6e9; padding:0.5em; margin:0.5em 0; display:table; }
+		.olControlAttribution
+		{	bottom:0;
+			background:rgba(255,255,255,0.6);
+			padding: 0 0.5em;
+		}
+	</style>
+
+	<script type="text/javascript">
+		var map;
+		var popupClass = "Default";
+		
+		function init(){
+			map = new OpenLayers.Map('map');
+
+			var mapbox = new OpenLayers.Layer.XYZ(
+				"Natural Earth",
+				[	"http://a.tiles.mapbox.com/v3/mapbox.natural-earth-hypso-bathy/${z}/${x}/${y}.png",
+					"http://b.tiles.mapbox.com/v3/mapbox.natural-earth-hypso-bathy/${z}/${x}/${y}.png",
+					"http://c.tiles.mapbox.com/v3/mapbox.natural-earth-hypso-bathy/${z}/${x}/${y}.png",
+					"http://d.tiles.mapbox.com/v3/mapbox.natural-earth-hypso-bathy/${z}/${x}/${y}.png"
+				], {
+					attribution: "Tiles &copy; <a href='http://mapbox.com/'>MapBox</a>",
+					sphericalMercator: true,
+					wrapDateLine: true,
+					numZoomLevels: 5
+				}
+			);
+
+			var osm = new OpenLayers.Layer.OSM();
+
+			map.addLayers([mapbox, osm]);
+
+			map.addControl(new OpenLayers.Control.FullPage());
+			map.addControl(new OpenLayers.Control.LayerSwitcher());
+			
+			// Vector layer to 
+			var style = new OpenLayers.Style
+			({	pointRadius: 18,
+				externalGraphic: "img/pins.png",
+				backgroundGraphic: "img/pinsback.png",
+				graphicYOffset:-36,
+				backgroundXOffset: 0,
+				backgroundYOffset: -24,
+				graphicZIndex: 11,
+				backgroundGraphicZIndex: 10
+			});
+			/*
+			style=new OpenLayers.Style
+			({	pointRadius: 6,
+				graphicName: 'x'
+			});
+			*/
+			map.addLayers([mapbox, osm]);
+
+			mlayer = new OpenLayers.Layer.Vector ("Markers",
+			{	visibility:true,
+				rendererOptions: {yOrdering: true},
+				styleMap: new OpenLayers.StyleMap
+				({	"default": style,
+					"select": 
+					{	pointRadius: 24,
+						graphicYOffset:-48,
+						backgroundYOffset: -32
+					}
+				})
+			});
+			map.addLayer(mlayer);
+
+			map.zoomToMaxExtent();
+			
+			var b = map.calculateBounds();
+			for (var i = 0; i < 10; i++) 
+			{	var r1 = Math.random();
+				var r2 = Math.random();
+				var px = b.left + (b.right-b.left) *r1 ; 
+				var py = b.bottom + (b.top-b.bottom) *r2 ; 
+				var f = new OpenLayers.Feature.Vector( new OpenLayers.Geometry.Point(px, py) );
+				mlayer.addFeatures(f);
+			}
+			
+			
+			// http://jorix.github.io/OL-FeaturePopups/examples/feature-popups-external.html
+			// https://github.com/jorix/OL-FeaturePopups
+			var selectCtrl = new OpenLayers.Control.SelectFeature
+			(	mlayer,
+			{	onSelect: function (feature)
+				{	var pc = OpenLayers.Class(OpenLayers.Popup.Styled, { displayClass:popupClass, 'autoSize': true, 'closeBox':true });
+					var pc = OpenLayers.Class(OpenLayers.Popup.Styled[popupClass], { 'autoSize': true, 'closeBox':true });
+				
+					var popup = new pc ("popup",
+								feature.geometry.getBounds().getCenterLonLat(),
+								new OpenLayers.Size(200,200),
+								"Hello !",
+								{ size:{w:0,h:0}, offset: {x:0,y:-32} },
+								true
+					);
+					feature.popup = popup;
+					feature.layer.map.addPopup(popup);
+				},
+				onUnselect: function (feature) 
+				{	if (feature.popup) map.removePopup(feature.popup);
+					feature.popup = null; 
+				}
+			});
+			map.addControl (selectCtrl);
+			selectCtrl.activate();
+		}
+		
+		function refreshSelection()
+		{	var f = mlayer.selectedFeatures[0];
+			var s = map.getControlsByClass(/Select/)[0];
+			s.unselectAll(); 
+			s.select(f);
+		}
+	</script>
+</head>
+    <body onload="init()">
+		<a href="https://github.com/Viglino/OpenLayers-ext"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/38ef81f8aca64bb9a64448d0d70f1308ef5341ab/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6461726b626c75655f3132313632312e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png"></a>
+
+        <h1 id="title">OpenLayers-Ext Example</h1>
+
+        <div id="tags">
+            popup, css, custom
+        </div>
+
+        <p id="shortdesc">
+          Custom popup with CSS style.
+        </p>
+
+        <div id="map" class="smallmap" style="width:640px; height:400px;"></div>
+
+		<div id="options">
+			<p>
+			Style :
+			<select onchange="popupClass=this.value; refreshSelection();">
+				<option value="Default">Default</option>
+				<option value="Blue">Blue</option>
+				<option value="Black">Black</option>
+				<option value="Tips">Tips</option>
+				<option value="Think">Think</option>
+				<option value="Warning">Warning</option>
+			</select>
+			</p>
+		</div>
+		<div id="docs">
+			<p>
+			The popup are customized in a CSS.
+			</p> 
+			<p>
+			An anchor div is added on the corner of the popup with two div inside for customization. 
+			</p>
+		</div>
+    </body>
+</html>

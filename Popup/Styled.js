@@ -1,10 +1,9 @@
-/*
- * Copyright 2012 Institut Geographique National France, released under the
- * BSD license.
- *
- *	Draw a popup styled by the CSS.
- *
- */
+/** Copyright (c) 2014 by Jean-Marc.Viglino [at] ign.fr
+* Dual-licensed under the BSD Licence (http://opensource.org/licenses/BSD-2-Clause)
+* and the Beerware license (http://en.wikipedia.org/wiki/Beerware), 
+* feel free to use and abuse it in your projects (the code, not the beer ;-).
+* Source code on Github : https://github.com/Viglino/OpenLayers-ext
+*/
 /*
  * @requires OpenLayers.Popup.Anchored
  */
