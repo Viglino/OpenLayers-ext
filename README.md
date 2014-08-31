@@ -9,3 +9,5 @@ The FullPageButton control is a very simple push-button. When clicked, it adds a
 **OpenLayers.Control.ZoomBar :**
 The ZoomBar is a visible control composed of a set off button to switch zoom level.
 
+**OpenLayers.Popup.Styled :**
+Popup styled by a CSS.
