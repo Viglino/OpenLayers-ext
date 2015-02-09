@@ -114,12 +114,27 @@ OpenLayers.Layer.Cluster = OpenLayers.Class(OpenLayers.Layer.Vector,
 				animationMethod: this.startegyParam.animationMethod,
 				animationDuration: this.startegyParam.animationDuration
 			});
+		this.strategy_clusters = strategy_clusters;
 
 		if (options.strategies) options.strategies.push(strategy_clusters);
 		else options.strategies = [strategy_clusters];
 
 		OpenLayers.Layer.Vector.prototype.initialize.apply(this, [name, options]);
-	}, 
+	},
+	
+	addFeatures: function (features)
+	{	if (!this.strategy_clusters.clustering)
+		{	var f = this.strategy_clusters.features;
+			if (f) features = features.concat(f);
+		}
+		OpenLayers.Layer.Vector.prototype.addFeatures.apply(this, [features]);
+	},
+
+	refresh: function()
+	{	//this.strategy_clusters.clusters=null;
+		this.strategy_clusters.resolution = 0;
+		this.strategy_clusters.cluster();
+	},
 
 	CLASS_NAME: "OpenLayers.Layer.Cluster"
 });
