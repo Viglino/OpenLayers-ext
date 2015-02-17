@@ -1,22 +1,19 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
 	<meta name="apple-mobile-web-app-capable" content="yes">
 	<title>OpenLayers Bouncing markers</title>
-	<!--
-	<link rel="stylesheet" href="http://openlayers.org/dev/theme/default/style.css" type="text/css">
-	<script src="http://openlayers.org/dev/OpenLayers.debug.js"></script>
-	-->
-	<link rel="stylesheet" href="../../openlayers/lib/theme/default/style.css" type="text/css">
-	<script src="../../openlayers/lib/OpenLayers.js"></script>
+
+	<link rel="stylesheet" href="http://dev.openlayers.org/releases/OpenLayers-2.13.1/theme/default/style.css" />
+	<script type="text/javascript" src="http://dev.openlayers.org/releases/OpenLayers-2.13.1/OpenLayers.debug.js"></script>
 
 	<link rel="stylesheet" href="../Control/FullPage.css" type="text/css">
 	<script src="../Control/FullPage.js"></script>
 	<script src="../Control/Click.js"></script>
 
-	<script src="../bouncingMarker.js"></script>
+	<script src="../BounceEffect.js"></script>
 
 	<style>
 		body { font:1em Helvetica,Arial,sans-serif; }
@@ -37,9 +34,10 @@
 
 	<script type="text/javascript">
 		var map, mlayer;
-		var mode='drop';
-		var dragmode ='bounce';
+		var mode = OpenLayers.BounceEffect.DROP;
+		var dragmode = OpenLayers.BounceEffect.BOUNCE;
 		
+		/* Drop 3 features on the map */
 		function dropFeatures(m)
 		{	mode = m;
 			mlayer.removeAllFeatures();
@@ -52,11 +50,18 @@
 					var py = b.bottom + (b.top-b.bottom) *r2 ; 
 					var f = new OpenLayers.Feature.Vector( new OpenLayers.Geometry.Point(px, py) );
 					mlayer.addFeatures(f);
-					OpenLayers.bouncingMarker(f,{ mode:mode });
+					f.bounce (mode);
 				}, 300*i);
 			}
 		}
 		
+		/* Shake the map */
+		function shakeMap()
+		{	for (var i=0; i<mlayer.features.length; i++)
+				mlayer.features[i].bounce(dragmode);
+		}
+
+		/* Init the map */
 		function init(){
 			map = new OpenLayers.Map('map');
 
@@ -76,7 +81,7 @@
 
 			var osm = new OpenLayers.Layer.OSM();
 			
-			// Vector layer to 
+			// Vector layer to animate
 			var style = new OpenLayers.Style
 			({	pointRadius: 18,
 				externalGraphic: "img/pins.png",
@@ -106,25 +111,27 @@
 			map.addControl(new OpenLayers.Control.FullPage());
 			map.addControl(new OpenLayers.Control.LayerSwitcher());
 
-			// Drop a marker when click
+			// Drop a marker on click
 			var clicCtrl = new OpenLayers.Control.Click
 			({	//'keyMask' : OpenLayers.Handler.MOD_CTRL, 
 				onclick: function (lonlat) 
 				{	if (mlayer.features.length>10) mlayer.removeAllFeatures();
 					var f = new OpenLayers.Feature.Vector( new OpenLayers.Geometry.Point(lonlat.lon, lonlat.lat), {} )
 					mlayer.addFeatures (f);
-					OpenLayers.bouncingMarker (f,{ mode:mode });
+					f.bounce (mode);
 				}
 			});
 			map.addControl (clicCtrl);
 			clicCtrl.activate();
 
+			// Animate marker on drag end
 			var dragCtrl = new OpenLayers.Control.DragFeature
 			(	mlayer,
-			{	onComplete: function (f)
-				{	OpenLayers.bouncingMarker (f, { mode: dragmode });
+				{	onComplete: function (f)
+					{	f.bounce (dragmode);
+					}
 				}
-			});
+			);
 			map.addControl (dragCtrl);
 			dragCtrl.activate();
 
@@ -143,8 +150,8 @@
 
 		<div id="docs">
 			<p id="shortdesc">
-			  Add animations method on point features.
-			  The animation static methods are designed to be used with externalGraphic (and backgroundGraphic). 
+			  Add animations method on point features (OpenLayers.Feature.Vector.prototype.bounce).<br />
+			  The animation methods is designed to be used with externalGraphic (and backgroundGraphic). 
 			  It will modify the graphicOffset of the marker.
 			</p>
 			<p>
@@ -162,20 +169,23 @@
 				Feature can be thrown from the top-left corner of the map.<br />
 			</p>
 			<p>Add new features on the map : <br />
-				<button onclick="dropFeatures('drop');">Drop!</button>
-				<button onclick="dropFeatures('fall');">Fall!</button>
-				<button onclick="dropFeatures('slide');">Slide!</button>
-				<button onclick="dropFeatures('slip');">Slip!</button>
-				<button onclick="dropFeatures('throw');">Throw!</button>
+				<button onclick="dropFeatures(OpenLayers.BounceEffect.DROP);">Drop!</button>
+				<button onclick="dropFeatures(OpenLayers.BounceEffect.FALL);">Fall!</button>
+				<button onclick="dropFeatures(OpenLayers.BounceEffect.SLIDE);">Slide!</button>
+				<button onclick="dropFeatures(OpenLayers.BounceEffect.SLIP);">Slip!</button>
+				<button onclick="dropFeatures(OpenLayers.BounceEffect.THROW);">Throw!</button>
 				<br />
 				<small>Click on the map to add new features!</small>
 			</p>
 			<p>
 				Animate the feature when dragged :<br />
-				<input id=bounce name=drag type='radio' checked onchange="dragmode= 'bounce';" /><label for=bounce> Bounce</label>
-				<input id=shake name=drag type='radio' onchange="dragmode = 'shake';" /><label for=shake> Shake</label>
+				<input id=bounce name=drag type='radio' checked onchange="dragmode= OpenLayers.BounceEffect.BOUNCE;" /><label for=bounce> Bounce</label>
+				<input id=shake name=drag type='radio' onchange="dragmode = OpenLayers.BounceEffect.SHAKE;" /><label for=shake> Shake</label>
 				<br />
 				<small>Drag feature on the map to look the effect!</small>
+			</p>
+			<p><button onclick="shakeMap();">Shake the map!</button><br />
+				<small>Shake the features on the map!</small>
 			</p>
 		</div>
 
