@@ -133,10 +133,7 @@ OpenLayers.Control.SelectCluster = OpenLayers.Class(OpenLayers.Control.SelectFea
 			this.selLayer.setVisibility(true);
 		
 			// Pixel size in map unit
-			var ll = this.map.getCenter();
-			var p0 = this.map.getPixelFromLonLat(ll);
-			var px = this.map.getPixelFromLonLat(new OpenLayers.LonLat(ll.lon+1000, ll.lat));
-			var pix = 1000 / p0.distanceTo(px);
+			var pix = feature.layer.map.resolution;
 
 			// Draw on a circle
 			if (!this.spiral || feature.cluster.length <= this.circleMaxObject)
