@@ -6,8 +6,8 @@
 */
 /**
  * Class: OpenLayers.Control.LayerMenu
- * The LayerMenu is a visible control composed of a set off button to switch baseLayer visibility.
- *	Overlays of the same group as the baseLayer are shown with the baseLayer
+ * The LayerMenu is a visible control as a menu with of a set off button to switch baseLayer visibility.
+ * Overlays of the same group as the baseLayer are shown with the baseLayer
  *
  * Inherits from:
  *  - <OpenLayers.Control>
@@ -137,7 +137,6 @@ OpenLayers.Control.LayerMenu = OpenLayers.Class(OpenLayers.Control,
 			if (l) 
 			{	if (l.isBaseLayer) 
 				{	this.map.setBaseLayer(l);
-					this.menuBtn.innerHTML = l.group || l.name;
 				}
 				this.setLayer();
 			}
@@ -152,7 +151,10 @@ OpenLayers.Control.LayerMenu = OpenLayers.Class(OpenLayers.Control,
 	{	for (var i=0; i<this.buttons.length; i++)
 		{	var l = this.map.getLayersBy("id",this.buttons[i].layer).pop();
 			if (l)
-			{	if (l.getVisibility()) OpenLayers.Element.addClass(this.buttons[i], "select");
+			{	if (l.getVisibility()) 
+				{	OpenLayers.Element.addClass(this.buttons[i], "select");
+					this.menuBtn.innerHTML = l.group || l.name;
+				}
 				else OpenLayers.Element.removeClass(this.buttons[i], "select");
 			}
 		}
