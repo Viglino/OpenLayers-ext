@@ -3,9 +3,20 @@
 	top:0;
 	font-weight:bold;
 	font-family:"Trebuchet MS",Helvetica,sans-serif;
-	overflow:hidden;
 	margin:0.5em;
 }
+.olControlLayerMenu:before
+{	content:"";
+	position:absolute;
+	z-index:-1;
+	background:#fff;
+	opacity:0.5;
+	top:-0.25em;
+	left:-0.25em;
+	right:-0.25em;
+	height:2.2em;
+}
+
 .olControlLayerMenu.olAlignRight
 {	right:0;
 }
@@ -22,7 +33,7 @@
 	cursor: pointer;
 	height:0;
 	transition:all 0.2s;
-
+	overflow:hidden;
 }
 .olControlLayerMenu div.select,
 .olControlLayerMenu div:hover
