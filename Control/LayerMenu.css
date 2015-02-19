@@ -1,0 +1,41 @@
+.olControlLayerMenu
+{	position:absolute;
+	top:0;
+	font-weight:bold;
+	font-family:"Trebuchet MS",Helvetica,sans-serif;
+	overflow:hidden;
+	margin:0.5em;
+}
+.olControlLayerMenu.olAlignRight
+{	right:0;
+}
+.olControlLayerMenu:hover div
+{	height:1.3em;
+	padding: 0.2em 30px 0.2em 0.5em;
+}
+.olControlLayerMenu div
+{	display:block;
+	background:#fff;
+	color:#369;
+	padding: 0 30px 0 0.5em;
+	margin: 0;
+	cursor: pointer;
+	height:0;
+	transition:all 0.2s;
+
+}
+.olControlLayerMenu div.select,
+.olControlLayerMenu div:hover
+{	background-color:#369;
+	color:#fff;
+}
+
+.olControlLayerMenu div.olLayerMenuBtn,
+.olControlLayerMenu div.olLayerMenuBtn:hover
+{	background:no-repeat right center #fff;
+	background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAKCAYAAACngj4SAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAGTgAABk4B1pBWuwAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAEmSURBVDiNrZIxS8NQFEbPfVVBRa2Lg4qLuDkYTBEcpNlcqrj4C6wJ+H9sGkcXwa2gCCp1LxV36VR1chIEh5rrYAuvoS0k9Gzvux8cLvfJzsnFasfENWAeOG5G/jMjcPxwz6hcKrwJHDYj/3NUP4npyhxgHXhw/NAdVnaDStGo3AJrArsCV2lkAAZYsN6LRuW+UI4KyeL2adXT2NwAs71MhXxq4a/oPvBuZflYtO4GlWIvcMvRAXAHzFi9lsl1jtIKBWDLDzdyKnVgxZp9AyVRmVPRa2CqTzbR8RrnZ+1MQgA3qGxqbB6BJWv+BUwC01bWBrxm5LfSyvqEMHRTm8ybDRRa0idgedwy+P+lfbxUg9ecigd8jFsGAzbs0b1pDfgBSllvluQPpkBkZ4TKS8gAAAAASUVORK5CYII=');
+	color:#369;
+	padding: 0.2em 30px 0.2em 0.5em;
+	padding-right:30px;
+	height:1.3em;
+}
