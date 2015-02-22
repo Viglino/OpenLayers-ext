@@ -54,6 +54,7 @@ OpenLayers.Layer.Cluster = OpenLayers.Class(OpenLayers.Layer.Vector,
 	*/
 	initialize: function(name, options) 
 	{   if (!options) options={};
+		var self = this;
 		// 
 		var smap = options.styleMap;
 		if (!smap) 
@@ -71,7 +72,7 @@ OpenLayers.Layer.Cluster = OpenLayers.Class(OpenLayers.Layer.Vector,
 			// Override
 			smap.styles["default"].defaultStyle[s] = "${"+s+"}";
 			smap.styles["default"].context[s] = function(feature)
-				{	if (feature.cluster && feature.attributes.count>1) return f(feature);
+				{	if (feature.cluster && self.countFeaturesInCluster(feature)>1) return f(feature);
 					else return f0 ? f0(feature) : v0 ? v0 : "";
 				};
 			smap.styles["default"].propertyStyles[s] = true;
@@ -81,7 +82,8 @@ OpenLayers.Layer.Cluster = OpenLayers.Class(OpenLayers.Layer.Vector,
 		var minRadius = smap.styles["default"].defaultStyle.minRadius || 6;
 		var maxRadius = smap.styles["default"].defaultStyle.maxRadius || 30;
 		var facRadius = smap.styles["default"].defaultStyle.facRadius || 1;
-		overrideStyle ("pointRadius", function(feature) { return Math.min(minRadius + (feature.attributes.count-1)*facRadius,maxRadius);});
+//		overrideStyle ("pointRadius", function(feature) { return Math.min(minRadius + (feature.attributes.count-1)*facRadius,maxRadius);});
+		overrideStyle ("pointRadius", function(feature) { return Math.min(minRadius + (self.countFeaturesInCluster(feature)-1)*facRadius,maxRadius);});
 		// Overload strokeWidth
 		overrideStyle ("strokeWidth", function(feature) { return 10; });
 		// Overload strokeOpacity
@@ -103,7 +105,7 @@ OpenLayers.Layer.Cluster = OpenLayers.Class(OpenLayers.Layer.Vector,
 		// Overload externalGraphic
 		overrideStyle ("backgroundGraphic", function(feature) { return ""; });
 		// Overload label
-		overrideStyle ("label", function(feature) { return feature.attributes.count; });
+		overrideStyle ("label", function(feature) { return self.countFeaturesInCluster(feature); });
 
 
 		var strategy;
@@ -122,6 +124,8 @@ OpenLayers.Layer.Cluster = OpenLayers.Class(OpenLayers.Layer.Vector,
 		OpenLayers.Layer.Vector.prototype.initialize.apply(this, [name, options]);
 	},
 	
+	/** Add new feature : the standard method remove existing features
+	*/
 	addFeatures: function (features)
 	{	if (!this.strategy_clusters.clustering)
 		{	var f = this.strategy_clusters.features;
@@ -130,11 +134,98 @@ OpenLayers.Layer.Cluster = OpenLayers.Class(OpenLayers.Layer.Vector,
 		OpenLayers.Layer.Vector.prototype.addFeatures.apply(this, [features]);
 	},
 
+	/** Refresh the layer : re-calculate the clusters
+	*/
 	refresh: function()
 	{	//this.strategy_clusters.clusters=null;
 		this.strategy_clusters.resolution = 0;
 		this.strategy_clusters.cluster();
 	},
 
+	/** Compact features at the same coords in a cluster to minimze number of features
+	*/
+	compact: function()
+	{	if (this.isCompact) return;
+		var features = this.strategy_clusters.features;
+		var clusters = [];
+		var clustered;
+		// Cluster features at the same coord
+		for (var i=0; i<features.length; i++)
+		{	feature = features[i];
+			if(feature.geometry) 
+			{	clustered = false;
+				for(var j=clusters.length-1; j>=0; --j) 
+				{	cluster = clusters[j];
+					if(feature.geometry.getBounds().getCenterLonLat().equals(cluster.geometry.getBounds().getCenterLonLat())) 
+					{	cluster.cluster.push(feature);
+						cluster.attributes.count += 1;
+						clustered = true;
+						break;
+					}
+				}
+				if (!clustered) 
+				{	var center = feature.geometry.getBounds().getCenterLonLat();
+					var cluster = new OpenLayers.Feature.Vector(
+						new OpenLayers.Geometry.Point(center.lon, center.lat),
+						{count: 1}
+					);
+					cluster.cluster = [feature];
+					clusters.push(cluster);
+				}
+			}
+		}
+		features = new Array();
+		var l = clusters.length;
+		for (var i=0; i<l; i++)
+		{	if (clusters[i].cluster && clusters[i].attributes.count==1) features.push(clusters[i].cluster[0]);
+			else features.push(clusters[i]);
+		}
+		// Add the new features
+		OpenLayers.Layer.Vector.prototype.addFeatures.apply(this, [features]);
+		this.isCompact = true;
+		this.refresh();
+	},
+
+	/** Count number of feature in a cluster
+	*/
+	countFeaturesInCluster: function(feature)
+	{	if (feature.layer != this) return 1;
+		if (feature.cluster)
+		{	// Normal cluster
+			if (!this.isCompact) return feature.attributes.count;
+			var c = 0;
+			// Compact Cluster > count cluster of cluster
+			for (var i=0; i<feature.cluster.length; i++)
+			{	c += feature.cluster[i].cluster ? feature.cluster[i].attributes.count : 1;
+			}
+			return c;
+		}
+		// No cluster
+		else return 1;
+	},
+
+	/** Get the features in a cluster
+	*/
+	getFeaturesInCluster: function(feature)
+	{	if (feature.layer != this) return [feature];
+		if (feature.cluster)
+		{	// Normal cluster
+			if (!this.isCompact) return feature.cluster;
+			var f=new Array();
+			// Compact Cluster > count cluster of cluster
+			for (var i=0; i<feature.cluster.length; i++)
+			{	if (feature.cluster[i].cluster) 
+				{	for (k=0; k<feature.cluster[i].cluster.length; k++) 
+						f.push( feature.cluster[i].cluster[k] )
+				}
+				else f.push( feature.cluster[i] );
+			}
+			return f;
+		}
+		// No cluster
+		else return [feature];
+	},
+
+	/** Cluster layer */
 	CLASS_NAME: "OpenLayers.Layer.Cluster"
 });

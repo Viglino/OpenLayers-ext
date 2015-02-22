@@ -125,26 +125,38 @@ OpenLayers.Control.SelectCluster = OpenLayers.Class(OpenLayers.Control.SelectFea
     select: function(feature) 
 	{	// Don't spread twice
 		if (feature == this.lastCluster && this.selLayer.getVisibility()) return;
+		var count=1;
+		var layer = feature.layer;
 		// Spread the cluster out
-		if (feature.cluster && feature.attributes.count>1)
+		if (feature.cluster) 
 		{	this.lastCluster = feature;
 			// Clear the Layer
 			this.selLayer.removeAllFeatures();
 			this.selLayer.setVisibility(true);
-		
+			if (layer && layer.countFeaturesInCluster) count = layer.countFeaturesInCluster(feature);
+			else count = feature.cluster.attributes.count;
+		}
+
+		if (count>1)
+		{	
 			// Pixel size in map unit
 			var pix = feature.layer.map.resolution;
+			var cluster = new Array();;
+			if (layer && layer.getFeaturesInCluster)
+			{	cluster = layer.getFeaturesInCluster(feature);
+			}
+			else cluster = feature.cluster;
 
 			// Draw on a circle
-			if (!this.spiral || feature.cluster.length <= this.circleMaxObject)
-			{	var r = pix * this.pointRadius * (0.5 + feature.cluster.length / 4);
+			if (!this.spiral || cluster.length <= this.circleMaxObject)
+			{	var r = pix * this.pointRadius * (0.5 + cluster.length / 4);
 				var features = new Array();
 				var links = new Array();
-				var max = Math.min(feature.cluster.length, this.circleMaxObject);
+				var max = Math.min(cluster.length, this.circleMaxObject);
 				// Features on a circle
 				for (i=0; i<max; i++)
 				{	// New feature
-					var f = feature.cluster[i].clone();
+					var f = cluster[i].clone();
 					var a = 2*Math.PI*i/max;
 					if (max==2 || max == 4) a += Math.PI/4;
 					if (this.animate)
@@ -156,7 +168,7 @@ OpenLayers.Control.SelectCluster = OpenLayers.Class(OpenLayers.Control.SelectFea
 					else f.geometry = new OpenLayers.Geometry.Point (feature.geometry.x+r*Math.sin(a), feature.geometry.y+r*Math.cos(a));
 					// Draw connection
 					if (this.connect)
-					{	var f2 = feature.cluster[i].clone();
+					{	var f2 = cluster[i].clone();
 						f2.geometry = new OpenLayers.Geometry.LineString (
 							[	f.geometry ,
 								feature.geometry
@@ -176,7 +188,7 @@ OpenLayers.Control.SelectCluster = OpenLayers.Class(OpenLayers.Control.SelectFea
 				var d = 2*this.pointRadius;
 				var features = new Array();
 				var links = new Array();
-				var max = Math.min (this.maxPoint, feature.cluster.length);
+				var max = Math.min (this.maxPoint, cluster.length);
 				// Feature on a spiral
 				for (i=0; i<max; i++)
 				{	// Nouveau rayon
@@ -186,7 +198,7 @@ OpenLayers.Control.SelectCluster = OpenLayers.Class(OpenLayers.Control.SelectFea
 					var dx = pix*r*Math.sin(a)
 					var dy = pix*r*Math.cos(a)
 					// New Feature
-					var f = feature.cluster[i].clone();
+					var f = cluster[i].clone();
 					if (this.animate)
 					{	f.dataAnimate = 
 							{	x0:feature.geometry.x, y0:feature.geometry.y,
@@ -197,7 +209,7 @@ OpenLayers.Control.SelectCluster = OpenLayers.Class(OpenLayers.Control.SelectFea
 					features.push(f);
 					// Draw connection
 					if (this.connect)
-					{	var f2 = feature.cluster[i].clone();
+					{	var f2 = cluster[i].clone();
 						f2.geometry = new OpenLayers.Geometry.LineString (
 							[	f.geometry ,
 								feature.geometry
