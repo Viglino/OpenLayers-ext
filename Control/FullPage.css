@@ -10,6 +10,7 @@ div.olFullPageMap
 	right: 0 !important;
 	top: 0 !important;
 	width: auto !important;
+	border: 0 !important;
 }
 
 /* Control button */

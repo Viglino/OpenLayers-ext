@@ -1,1 +1,77 @@
-<HTML>
+<!DOCTYPE html>
+<html>
+<!----------------------------------------------------------
+ 
+	Copyright (c) 2013 Jean-Marc VIGLINO, 
+	released under the CeCILL license (http://www.cecill.info/).
+	
+------------------------------------------------------------><head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	
+	<style>
+		body { font:1em Helvetica,Arial,sans-serif; }
+		h1 { color:#369; margin:0.5em 0 0.2em }
+		h2 { color:#369; margin:1em 0 0.2em }
+		#tags { color:#69F; font-size:0.9em; }
+		img { padding:0.5em 0.5em 1em; background-color:#369; margin:0.5em 0;}
+		p { margin: 0.3em 0; }
+		p.title { color:#369; font-weight:bold; }
+		#map { background:#fff; float:left; border-right:10px solid transparent; }
+		#options { margin:0.5em; display:table; }
+		#shortdesc { background:#e3e6e9; padding:0.5em; margin:0.5em 0; display:table; }
+		.olControlAttribution
+		{	bottom:0;
+			background:rgba(255,255,255,0.6);
+			padding: 0 0.5em;
+		}
+	</style>
+
+</head>
+<body>
+<h1>OpenLayers-ext</h1>
+
+Extension for the OpenLayers library.
+
+<h2>OpenLayers.Control</h2>
+<ul>
+<li>
+<a href="examples/map.controls.html">OpenLayers.Control.FullPage</a>: a very simple push-button. When clicked, it adds a olFullPageMap 
+style to the map to display the map at fixed position and fill the browser window.
+</li>
+<li>
+<a href="examples/map.controls.html">OpenLayers.Control.ZoomBar</a>: a visible control composed of a set of buttons to switch zoom level.
+</li>
+<li>
+<a href="examples/map.popup.html">OpenLayers.Popup.Styled</a>: Popup styled by a CSS.
+<br /><a href="examples/map.popup.html"><img alt="popup map" src="img/popup.jpg" /></a>
+</li>
+</ul>
+
+<h2>Cluster</h2>
+<a href="examples/map.cluster.html"><img alt="Cluster map" src="img/cluster.jpg" /></a>
+<a href="examples/map.cluster.html">OpenLayers.Control.SelectCluster</a>: A select control to select features.
+<p>
+When selected, the clusters animate and spread dynamicaly to show the clustered features. 
+</p>
+
+<h2>Statistical maps</h2>
+<a href="examples/map.charts.html"><img alt="Charts map" src="img/charts.jpg" /></a>
+<p>
+<a href="examples/map.charts.html">OpenLayers.Renderer.SVGCharts</a>: Implements a SVG based renderer to display charts (pies or bars) on a map.
+</p>
+
+<h2>Font Awesome</h2>
+<a href="examples/map.awesome.html"><img alt="Font Awesome map" src="img/awesome.jpg" /></a>
+<p>
+<a href="examples/map.awesome.html">Font Awesome</a>: Overwrite the SVG renderer to draw <a href="http://fontawesome.io/">Font Awesome</a> symbols on a vector layer.
+</p>
+
+<h2>Boncing markers</h2>
+<a href="examples/map.boncing.marker.html"><img alt="Boncing markers" src="img/bounce.jpg" /></a>
+<p>
+Add animations method on point features (<a href="examples/map.boncing.marker.html">OpenLayers.Feature.Vector.prototype.bounce</a>).<br />
+The animation methods is designed to be used with externalGraphic (and backgroundGraphic). It will modify the graphicOffset of the marker.  
+</p>
+
+</body>
+</html>

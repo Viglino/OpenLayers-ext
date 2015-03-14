@@ -1,13 +1,23 @@
 ﻿<!DOCTYPE html>
 <html>
+<!----------------------------------------------------------
+ 
+	Copyright (c) 2013 Jean-Marc VIGLINO, 
+	released under the CeCILL license (http://www.cecill.info/).
+	
+------------------------------------------------------------>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
 	<meta name="apple-mobile-web-app-capable" content="yes">
 	<title>OpenLayers Bouncing markers</title>
 
-	<link rel="stylesheet" href="http://dev.openlayers.org/releases/OpenLayers-2.13.1/theme/default/style.css" />
-	<script type="text/javascript" src="http://dev.openlayers.org/releases/OpenLayers-2.13.1/OpenLayers.debug.js"></script>
+	<link rel="stylesheet" href="http://dev.openlayers.org/theme/default/style.css" />
+	<script type="text/javascript" src="http://dev.openlayers.org/OpenLayers.js"></script>
+	<!--
+	<link rel="stylesheet" href="../../openlayers/lib/theme/default/style.css" type="text/css">
+	<script src="../../openlayers/lib/OpenLayers.js"></script>
+	-->
 
 	<link rel="stylesheet" href="../Control/FullPage.css" type="text/css">
 	<script src="../Control/FullPage.js"></script>
@@ -18,6 +28,7 @@
 	<style>
 		body { font:1em Helvetica,Arial,sans-serif; }
 		h1 { color:#369; margin:0.5em 0 0.2em }
+		small { color:#369; }
 		#tags { color:#69F; font-size:0.9em; }
 		p { margin: 0.5em 0; }
 		p.title { color:#369; font-weight:bold; }
@@ -42,12 +53,13 @@
 		{	mode = m;
 			mlayer.removeAllFeatures();
 			var b = map.calculateBounds();
+			var d = 40*map.getResolution(); // inset 40px
 			for (var i = 0; i < 3; i++) 
 			{	setTimeout (function()
 				{	var r1 = Math.random();
 					var r2 = Math.random();
-					var px = b.left + (b.right-b.left) *r1 ; 
-					var py = b.bottom + (b.top-b.bottom) *r2 ; 
+					var px = b.left +d + (b.right-b.left-2*d) *r1 ; 
+					var py = b.bottom +d + (b.top-b.bottom -2*d) *r2 ; 
 					var f = new OpenLayers.Feature.Vector( new OpenLayers.Geometry.Point(px, py) );
 					mlayer.addFeatures(f);
 					f.bounce (mode);
@@ -136,6 +148,8 @@
 			dragCtrl.activate();
 
 			map.zoomToMaxExtent();
+			
+			setTimeout (function(){dropFeatures(OpenLayers.BounceEffect.DROP);},1000);
 		}
 	</script>
 </head>

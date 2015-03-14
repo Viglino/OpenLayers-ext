@@ -1,0 +1,195 @@
+﻿<!DOCTYPE html>
+<html>
+<!----------------------------------------------------------
+ 
+	Copyright (c) 2013 Jean-Marc VIGLINO, 
+	released under the CeCILL license (http://www.cecill.info/).
+	
+------------------------------------------------------------>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<title>OpenLayers-Ext - Charts map example</title>
+
+	<link rel="stylesheet" href="http://dev.openlayers.org/theme/default/style.css" />
+	<script type="text/javascript" src="http://dev.openlayers.org/OpenLayers.js"></script>
+	<!--
+	<link rel="stylesheet" href="../../openlayers/lib/theme/default/style.css" type="text/css">
+	<script src="../../openlayers/lib/OpenLayers.js"></script>
+	-->
+	
+	<link rel="stylesheet" href="../Control/FullPage.css" type="text/css">
+	<script src="../Control/FullPage.js"></script>
+
+	<script src="../Renderer/SVGCharts.js"></script>
+
+	<style>
+		body { font:1em Helvetica,Arial,sans-serif; }
+		h1 { color:#369; margin:0.5em 0 0.2em }
+		#tags { color:#69F; font-size:0.9em; }
+		p { margin: 0.3em 0; }
+		p.title { color:#369; font-weight:bold; }
+		#map { background:#fff; float:left; border-right:10px solid transparent; }
+		#options { margin:0.5em; display:table; }
+		#shortdesc { background:#e3e6e9; padding:0.5em; margin:0.5em 0; display:table; }
+		.olControlAttribution
+		{	bottom:0;
+			background:rgba(255,255,255,0.6);
+			padding: 0 0.5em;
+		}
+	</style>
+
+
+	<script type="text/javascript">
+		var map, style, mlayer;
+		var chartype = "pie";
+		var max = 0;
+		
+		function init(){
+			map = new OpenLayers.Map('map');
+
+			var mapbox = new OpenLayers.Layer.XYZ(
+				"Natural Earth",
+				[	"http://a.tiles.mapbox.com/v3/mapbox.natural-earth-hypso-bathy/${z}/${x}/${y}.png",
+					"http://b.tiles.mapbox.com/v3/mapbox.natural-earth-hypso-bathy/${z}/${x}/${y}.png",
+					"http://c.tiles.mapbox.com/v3/mapbox.natural-earth-hypso-bathy/${z}/${x}/${y}.png",
+					"http://d.tiles.mapbox.com/v3/mapbox.natural-earth-hypso-bathy/${z}/${x}/${y}.png"
+				], {
+					attribution: "Tiles &copy; <a href='http://mapbox.com/'>MapBox</a>",
+					sphericalMercator: true,
+					wrapDateLine: true,
+					numZoomLevels: 5
+				}
+			);
+
+			var osm = new OpenLayers.Layer.OSM();
+
+			map.addLayers([mapbox, osm]);
+
+			map.addControl(new OpenLayers.Control.FullPage());
+			map.addControl(new OpenLayers.Control.LayerSwitcher());
+			
+			// Vector layer to 
+			style = new OpenLayers.Style
+			({	pointRadius: "${getRadius}", //24,
+				chartMax: "${getMax}",
+				fillColor:"#369",
+				
+				chartType: "${getChartype}",
+				chart:"${values}",
+				chartColor:"${getColor}",
+				chartBackcolor: "${get3d}",
+				chartBarWidth: 15,
+				chartSuffix: "${getSuffix}",
+				
+				strokeWidth:1,
+				stroke:true,
+				strokeColor:"#fff"
+			},
+			{	context:
+				{	getChartype: function(f) { return chartype; },
+					getRadius: function(f)
+					{	if (chartype=="bar" || !document.getElementById('relative').checked) return 24;
+						return f.attributes.radius;
+					},
+					getSuffix: function(f)
+					{	return (chartype=="bar" ? "":"%");
+					},
+					getColor: function(f) { return OpenLayers.Renderer.SVGCharts.colors[document.getElementById('color').value]; },
+					get3d: function(f) { return document.getElementById('set3d').checked ? "#666" : ""; },
+					getMax: function(f) { return document.getElementById('relative').checked ? max : 0; }
+				}
+			});
+
+			map.addLayers([mapbox, osm]);
+
+			mlayer = new OpenLayers.Layer.Vector ("Markers",
+			{	visibility:true,
+				rendererOptions: {yOrdering: true},
+				renderers: ["SVGCharts"],
+				styleMap: new OpenLayers.StyleMap
+				({	"default": style,
+					"select": 
+					{	pointRadius: 24,
+						strokeWidth:2,
+						fontSize:12,
+						fontWeight:"bold",
+						fontColor:"#000",
+						zindex:1
+					}
+				})
+			});
+			map.addLayer(mlayer);
+
+			map.zoomToMaxExtent();
+			
+			var b = map.calculateBounds();
+			var d = 20*map.getResolution(); // inset 20px
+
+			// Add new stats features
+			for (var i = 0; i < 10; i++) 
+			{	var px = b.left +d + (b.right-b.left-2*d) *Math.random();
+				var py = b.bottom +d + (b.top-b.bottom-2*d) *Math.random();
+				var n, nb=0, val = "";
+				for (var k=0; k<4; k++) 
+				{	n = 1+Math.round(5*Math.random());
+					val += (val ? "," : "") + n ;
+					nb += n;
+					if (max < n) max = n;
+				}
+				var f = new OpenLayers.Feature.Vector( new OpenLayers.Geometry.Point(px, py), { values:val, radius:nb });
+				mlayer.addFeatures(f);
+			}
+			
+			var selectCtrl = new OpenLayers.Control.SelectFeature(mlayer);
+			map.addControl (selectCtrl);
+			selectCtrl.activate();		
+		}
+
+		function setChartype(val)
+		{	chartype = val;
+			mlayer.redraw();
+		}
+		
+	</script>
+</head>
+    <body onload="init()">
+		<a href="https://github.com/Viglino/OpenLayers-ext"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/38ef81f8aca64bb9a64448d0d70f1308ef5341ab/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6461726b626c75655f3132313632312e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png"></a>
+
+        <h1 id="title">OpenLayers-Ext Charts</h1>
+
+        <div id="tags">
+            renderer, char, statistics, symbol, style
+        </div>
+
+        <p id="shortdesc">
+          Use a SVG based renderer to display charts on a map.
+        </p>
+
+        <div id="map" class="smallmap" style="width:640px; height:400px;"></div>
+
+		<div id="docs">
+			<p>
+			</p>
+		</div>
+ 		<div id="options">
+			Chart type:
+			<input id="pie" type="radio" name="type" value="pie" checked="checked" onchange="setChartype(this.value);" /><label for="pie">pie</label>
+			<input id="bar" type="radio" name="type" value="bar" onchange="setChartype(this.value);" /><label for="bar">bar</label>
+			<br />
+			Colors scheme:
+			<select id="color" onchange="mlayer.redraw();">
+				<option value="classic">classic</option>
+				<option value="dark">dark</option>
+				<option value="pale">pale</option>
+				<option value="pastel">pastel</option>
+				<option value="neon">neon</option>
+			</select>
+			<br />
+			<input id="relative" type="checkbox" value="max" onchange="mlayer.redraw();" checked="checked" /><label for="relative">Use relative size.</label>
+			<br />
+			<input id="set3d" type="checkbox" value="max" onchange="mlayer.redraw();" /><label for="set3d">3D pie.</label>
+		</div>
+   </body>
+</html>

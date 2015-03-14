@@ -1,0 +1,258 @@
+﻿<!DOCTYPE html>
+<html>
+<!----------------------------------------------------------
+ 
+	Copyright (c) 2013 Jean-Marc VIGLINO, 
+	released under the CeCILL license (http://www.cecill.info/).
+	
+------------------------------------------------------------>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<title>OpenLayers-Ext - FontAwesome example</title>
+
+	<link rel="stylesheet" href="http://dev.openlayers.org/theme/default/style.css" />
+	<script type="text/javascript" src="http://dev.openlayers.org/OpenLayers.js"></script>
+	<!--
+	<link rel="stylesheet" href="../../openlayers/lib/theme/default/style.css" type="text/css">
+	<script src="../../openlayers/lib/OpenLayers.js"></script>
+	-->
+	
+	<link rel="stylesheet" href="http://fontawesome.io/assets/font-awesome/css/font-awesome.css" type="text/css">
+
+	<link rel="stylesheet" href="../Control/FullPage.css" type="text/css">
+	<script src="../Control/FullPage.js"></script>
+
+	<script src="../Renderer/FASymbols.js"></script>
+
+	<style>
+		body { font:1em Helvetica,Arial,sans-serif; }
+		h1 { color:#369; margin:0.5em 0 0.2em }
+		#tags { color:#69F; font-size:0.9em; }
+		p { margin: 0.3em 0; }
+		p.title { color:#369; font-weight:bold; }
+		#map { background:#fff; float:left; border-right:10px solid transparent; }
+		#options { margin:0.5em; display:table; }
+		#shortdesc { background:#e3e6e9; padding:0.5em; margin:0.5em 0; display:table; }
+		.olControlAttribution
+		{	bottom:0;
+			background:rgba(255,255,255,0.6);
+			padding: 0 0.5em;
+		}
+	</style>
+
+
+	<script type="text/javascript">
+		var map, style, mlayer;
+		var bgcolor = "#369",
+			symcolor = "#369",
+			color = "#fff",
+			marker = "fa-marker";
+		
+		function init(){
+			map = new OpenLayers.Map('map');
+
+			var mapbox = new OpenLayers.Layer.XYZ(
+				"Natural Earth",
+				[	"http://a.tiles.mapbox.com/v3/mapbox.natural-earth-hypso-bathy/${z}/${x}/${y}.png",
+					"http://b.tiles.mapbox.com/v3/mapbox.natural-earth-hypso-bathy/${z}/${x}/${y}.png",
+					"http://c.tiles.mapbox.com/v3/mapbox.natural-earth-hypso-bathy/${z}/${x}/${y}.png",
+					"http://d.tiles.mapbox.com/v3/mapbox.natural-earth-hypso-bathy/${z}/${x}/${y}.png"
+				], {
+					attribution: "Tiles &copy; <a href='http://mapbox.com/'>MapBox</a>",
+					sphericalMercator: true,
+					wrapDateLine: true,
+					numZoomLevels: 5
+				}
+			);
+
+			var osm = new OpenLayers.Layer.OSM();
+
+			map.addLayers([mapbox, osm]);
+
+			map.addControl(new OpenLayers.Control.FullPage());
+			map.addControl(new OpenLayers.Control.LayerSwitcher());
+			
+			// Style with 3 font awesome labels
+			style = new OpenLayers.Style
+			({	pointRadius: 18,
+				graphicName: "${getMarker}",
+				backgroundGraphic: "img/pinsback.png",
+				fillColor: "${getBgColor}",
+				symbolYOffset: "${getOffset}",
+				rotation:0,
+				
+				faLabel: "${getBackSym}",
+				faColor: "#fff",
+				faSize: 0.8,
+				
+				faLabel_1: "${getSym}",
+				faColor_1: "${getSymColor}",
+				faSize_1: 0.6,
+				
+				faLabel_2: "${getFrontSym}",
+				faColor_2: "red",
+				faSize_2: 1,
+		
+				strokeWidth: "${getWidth}",
+				stroke: true,
+				strokeColor: "${getColor}",
+				backgroundXOffset: 0,
+				backgroundYOffset: -24,
+				graphicZIndex: 11,
+				backgroundGraphicZIndex: 10
+			}, 
+			{	context:
+				{	getMarker: function(f) 
+					{	return document.getElementById('pin').value;
+					},
+					getBackSym: function(f) 
+					{	return document.getElementById('backsym').checked ? "fa-circle" : "none";
+					},
+					getSym: function(f) 
+					{	if (!document.getElementById('fasymbol').value) return f.attributes.fa;
+						return document.getElementById('fasymbol').value;
+					},
+					getFrontSym: function(f) 
+					{	return document.getElementById('frontsym').checked ? "fa-ban" : "none";
+					},
+					getColor: function(f) 
+					{	return "#fff";
+					},
+					getBgColor: function(f) 
+					{	return document.getElementById('color').value;
+					},
+					getSymColor: function(f) 
+					{	return document.getElementById('backsym').checked ? document.getElementById('color').value : "#fff";
+					},
+					getBgColor: function(f) 
+					{	return document.getElementById('color').value;
+					},
+					getWidth: function(f) 
+					{	return document.getElementById('stroke').checked ? 2:0; 
+					},
+					getOffset: function(f) 
+					{	return document.getElementById('offset').checked ? -18:0; 
+					}
+				}
+			});
+
+			map.addLayers([mapbox, osm]);
+
+			mlayer = new OpenLayers.Layer.Vector ("Markers",
+			{	visibility:true,
+				rendererOptions: {yOrdering: true},
+				styleMap: new OpenLayers.StyleMap
+				({	"default": style,
+					"select": 
+					{	pointRadius: 24,
+						symbolYOffset: -24,
+						backgroundYOffset: -32
+					}
+				})
+			});
+			map.addLayer(mlayer);
+
+			map.zoomToMaxExtent();
+			
+			// Get symboles
+			var ts=[];
+			for (var i in OpenLayers.Renderer.faSymbol) ts.push(i);
+			
+			// Add 10 features to the map
+			var b = map.calculateBounds();
+			for (var i = 0; i < 10; i++) 
+			{	var r1 = Math.random();
+				var r2 = Math.random();
+				var d = 20*map.getResolution(); // inset 20px
+				var px = b.left +d + (b.right-b.left-2*d) *r1 ; 
+				var py = b.bottom +d + (b.top-b.bottom-2*d) *r2 ; 
+				var f = new OpenLayers.Feature.Vector( new OpenLayers.Geometry.Point(px, py), { fa: ts[Math.floor(Math.random()*ts.length)] } );
+				mlayer.addFeatures(f);
+			}
+			
+			var selectCtrl = new OpenLayers.Control.SelectFeature(mlayer);
+			map.addControl (selectCtrl);
+			selectCtrl.activate();		
+		}
+
+	</script>
+</head>
+    <body onload="init()">
+		<a href="https://github.com/Viglino/OpenLayers-ext"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/38ef81f8aca64bb9a64448d0d70f1308ef5341ab/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6461726b626c75655f3132313632312e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png"></a>
+
+        <h1 id="title">OpenLayers-Ext Fontawesome example</h1>
+
+        <div id="tags">
+            fontawesome, symbol, style
+        </div>
+
+        <p id="shortdesc">
+          Display <a href="http://fontawesome.io/">Font Awesome</a> symbols on a vector layer.
+        </p>
+
+        <div id="map" class="smallmap" style="width:640px; height:400px;"></div>
+
+		<div id="docs">
+			<p>
+			
+			</p>
+		</div>
+ 		<div id="options">
+ 			<p>Options:</p>
+ 			Symbol:
+ 			<select id="fasymbol" onchange="mlayer.redraw();">
+				<option value="" selected="selected">random</option>
+				<option value="fa-bed">bed</option>
+				<option value="fa-motorcycle">motorcycle</option>
+				<option value="fa-car">car</option>
+				<option value="fa-bus">bus</option>
+				<option value="fa-train">train</option>
+				<option value="fa-ship">ship</option>
+				<option value="fa-anchor">anchor</option>
+				<option value="fa-ambulance">ambulance</option>
+				<option value="fa-wheelchair">wheelchair</option>
+				<option value="fa-university">university</option>
+				<option value="fa-coffee">coffe</option>
+				<option value="fa-beer">beer</option>
+				<option value="fa-camera">camera</option>
+			</select>
+			<br />
+ 			Background graphic:
+			<select id="pin" onchange="mlayer.redraw();">
+				<option value="fa-none">None</option>
+				<option value="fa-circle">circle</option>
+				<option value="fa-square">square</option>
+				<option value="fa-hexagon">hexagon</option>
+				<option value="fa-blazon" selected="selected" >blazon</option>
+				<option value="fa-shield">shield</option>
+				<option value="fa-bookmark">bookmark</option>
+				<option value="fa-tag">tag</option>
+				<option value="fa-marker">marker</option>
+				<option value="fa-pin">pin</option>
+				<option value="fa-bubble">bubble</option>
+			</select>
+			<br />
+			Color: 
+			<select id="color" onchange="mlayer.redraw();">
+				<option value="#369">Petrol</option>
+				<option value="#f64">Tomato</option>
+				<option value="#fd0">Gold</option>
+				<option value="#b5d">Orchid</option>
+				<option value="#666">Gray</option>
+				<option value="#3b7">SeaGreen</option>
+				<option value="#880">Olive</option>
+			</select>
+			<br />
+			<input id="stroke" type="checkbox" onchange="mlayer.redraw();" checked=checked /> <label for="stroke">stroke</label>
+			<br />
+			<input id="offset" type="checkbox" onchange="mlayer.redraw();" checked=checked /> <label for="offset">align bottom</label>
+			<br />
+			<input id="backsym" type="checkbox" onchange="mlayer.redraw();" /> <label for="backsym">use a back symbol</label>
+			<br />
+			<input id="frontsym" type="checkbox" onchange="mlayer.redraw();" /> <label for="frontsym">use a front symbol</label>
+			<br />
+		</div>
+   </body>
+</html>
