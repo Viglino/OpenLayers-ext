@@ -34,7 +34,7 @@ OpenLayers.Renderer.SVGCharts: Implements a SVG based renderer to display charts
 
 ![Font Awesome map](http://viglino.github.io/OpenLayers-ext/img/awesome.jpg)
 
-Font Awesome: Overwrite the SVG renderer to draw Font Awesome symbols on a vector layer.
+Overwrite the SVG renderer to draw Font Awesome symbols on a vector layer.
 [View an example](http://viglino.github.io/OpenLayers-ext/examples/map.awesome.html)
 
 **Boncing markers**
