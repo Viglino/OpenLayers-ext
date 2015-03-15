@@ -38,6 +38,7 @@ OpenLayers.Renderer.SVG.prototype.setStyle = function(node, style, options)
 		for (var k = 0; ; k++) 
 		{	var fak = (k!=0 ? "_"+k : "");
 			if (!style['faLabel'+fak]) break;
+			if ( !OpenLayers.Renderer.faSymbol[style['faLabel'+fak]] ) continue; 
 
 			// Font symbol
 			var fa = this.nodeFactory(null, "text");
