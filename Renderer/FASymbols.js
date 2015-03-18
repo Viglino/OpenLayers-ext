@@ -94,6 +94,8 @@ OpenLayers.Renderer.SVG.prototype.setStyle = function(node, style, options)
 OpenLayers.Renderer.symbol["fa-none"] = [0,0,100,100];
 OpenLayers.Renderer.symbol["fa-circle"]  = [0,0,100,100];
 OpenLayers.Renderer.symbol["fa-square"] = [0,0,0,100,100,100,100,0,0,0];
+OpenLayers.Renderer.symbol["fa-triangle"] = [0,0,50,120,100,0,0,0];
+OpenLayers.Renderer.symbol["fa-diamond"] = [25,0,0,25,0,40, 50,130, 100,40,100,25,75,0,25,0];
 OpenLayers.Renderer.symbol["fa-hexagon"] = [50,0,5,20,5,80,50,100,95,80,95,20,50,0];
 OpenLayers.Renderer.symbol["fa-blazon"] = [5,0,0,5,0,95,5,100, 30,100,50,120,70,100, 95,100,100,95,100,5,95,0,5,0];
 OpenLayers.Renderer.symbol["fa-shield"] = [5,0,0,5,0,90,5,95, 50,115, 95,95,100,90,100,5,95,0,5,0];
@@ -102,7 +104,7 @@ OpenLayers.Renderer.symbol["fa-tag"] = [100,50,100,55,97,67,61,143,58,147,53,150
 OpenLayers.Renderer.symbol["fa-marker"] = [99,49,98,54,98,59,96,64,95,69,93,73,90,77,87,81,49,125,11,81,8,77,6,73,4,69,2,64,1,59,0,54,0,49,0,44,1,39,2,35,4,30,6,26,8,22,11,18,14,14,18,11,22,8,26,6,30,4,35,2,39,1,44,0,49,0,54,0,59,1,64,2,69,4,73,6,77,8,81,11,84,14,87,18,90,22,93,26,95,30,96,35,98,39,98,44];
 OpenLayers.Renderer.symbol["fa-pin"] = [99,59,91,78,78,91,60,99,50,99,50,165,50,99,40,99,21,91,8,78,0,60,0,40,8,21,21,8,39,0,59,0,78,8,91,21,99,40,99,59];
 OpenLayers.Renderer.symbol["fa-bubble"] = [99,50,99,55,98,59,97,64,95,69,93,73,91,77,88,81,85,85,81,88,77,91,73,93,69,95,64,97,50,132,35,97,30,95,26,93,22,91,18,88,14,85,11,81,8,77,6,73,4,69,2,64,1,59,0,55,0,50,0,44,1,40,2,35,4,30,6,26,8,22,11,18,14,14,18,11,22,8,26,6,30,4,35,2,40,1,44,0,50,0,55,0,59,1,64,2,69,4,73,6,77,8,81,11,85,14,88,18,91,22,93,26,95,30,97,35,98,40,99,44];
-
+OpenLayers.Renderer.symbol["fa-gear"] = [8,22,22,8,33,16,39,14,41,0,59,0,61,14,67,16,78,8,91,22,83,33,86,39,100,41,100,59,86,61,83,67,92,78,78,92,67,83,61,86,59,100,41,100,39,86,33,83,22,92,8,78,17,67,14,61,0,59,0,40,14,38,17,32];
 
 /* Transform Symbol to 100x100 shape * /
 var pin = OpenLayers.Renderer.symbol["fa-pin"];
@@ -117,7 +119,7 @@ for (var i=0; i<pin.length; i+=2)
 	if (maxy<pin[i+1]) maxy = pin[i+1];
 }
 //console.log (maxx+" "+minx+" - "+maxy+" "+miny);
-var sc = 132.0/Math.max(maxx-minx,maxy-miny);
+var sc = 100.0/Math.max(maxx-minx,maxy-miny);
 for (var i=0; i<pin.length; i+=2)
 {	pin[i] = Math.round((pin[i]-minx)*sc);
 	pin[i+1] = Math.round((pin[i+1]-miny)*sc);
