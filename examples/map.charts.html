@@ -14,7 +14,7 @@
 
 	<link rel="stylesheet" href="http://dev.openlayers.org/theme/default/style.css" />
 	<script type="text/javascript" src="http://dev.openlayers.org/OpenLayers.js"></script>
-	<!--
+	<!--	
 	<link rel="stylesheet" href="../../openlayers/lib/theme/default/style.css" type="text/css">
 	<script src="../../openlayers/lib/OpenLayers.js"></script>
 	-->
@@ -23,6 +23,7 @@
 	<script src="../Control/FullPage.js"></script>
 
 	<script src="../Renderer/SVGCharts.js"></script>
+	<script src="../Renderer/VMLCharts.js"></script>
 
 	<style>
 		body { font:1em Helvetica,Arial,sans-serif; }
@@ -106,8 +107,8 @@
 
 			mlayer = new OpenLayers.Layer.Vector ("Markers",
 			{	visibility:true,
-				rendererOptions: {yOrdering: true},
-				renderers: ["SVGCharts"],
+				rendererOptions: {yOrdering: false, zIndexing: true},
+				renderers: ["SVGCharts", "VMLCharts"],
 				styleMap: new OpenLayers.StyleMap
 				({	"default": style,
 					"select": 

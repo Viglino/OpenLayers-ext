@@ -187,7 +187,7 @@ OpenLayers.Renderer.SVGCharts = OpenLayers.Class(OpenLayers.Renderer.SVG,
 OpenLayers.Renderer.symbol["__chart"] = [0,0,100,100];
 
 OpenLayers.Renderer.SVGCharts.colors =
-{	classic: "orange,blue,red,green,cyan,magenta,yellow,lime",
+{	classic: "#ffa500,blue,red,green,cyan,magenta,yellow,#0f0",
 	dark: "#960,#003,#900,#060,#099,#909,#990,#090",
 	pale: "#fd0,#369,#f64,#3b7,#880,#b5d,#666",
 	pastel: "#fb4,#79c,#f66,#7d7,#acc,#fdd,#ff9,#b9b",
