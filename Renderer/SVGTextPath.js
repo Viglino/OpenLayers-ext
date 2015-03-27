@@ -131,7 +131,7 @@ OpenLayers.Renderer.SVG.prototype.pathText = function (node, style, suffix)
 	var align = style.labelAlign || OpenLayers.Renderer.defaultSymbolizer.labelAlign;
 	label.setAttributeNS(null, "text-anchor", OpenLayers.Renderer.SVG.LABEL_ALIGN[align[0]] || "middle");
 	textPath.setAttribute("startOffset", style.pathLabelXOffset || OpenLayers.Renderer.SVG.LABEL_STARTOFFSET[align[0]] || "50%");
-	if (OpenLayers.IS_GECKO === true) label.setAttributeNS(null, "dominant-baseline", OpenLayers.Renderer.SVG.LABEL_ALIGN[align[1]] || "central");
+	label.setAttributeNS(null, "dominant-baseline", OpenLayers.Renderer.SVG.LABEL_ALIGN[align[1]] || "central");
 	if (style.pathLabelYOffset) label.setAttribute("dy", style.pathLabelYOffset);
 	//textPath.setAttribute("method","stretch");
 	//textPath.setAttribute("spacing","auto");
