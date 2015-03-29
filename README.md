@@ -28,6 +28,7 @@ When selected, the clusters animate and spread dynamicaly to show the clustered 
 ![Charts map](http://viglino.github.io/OpenLayers-ext/img/charts.jpg)
 
 OpenLayers.Renderer.SVGCharts: Implements a SVG based renderer to display charts (pies or bars) on a map.
+OpenLayers.Renderer.VMLCharts: Implements a VML based renderer to display charts (pies or bars) on a map.
 [View an example](http://viglino.github.io/OpenLayers-ext/examples/map.charts.html)
 
 **Font Awesome**

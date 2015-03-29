@@ -16,10 +16,10 @@
  pointRadius	{Number} Pixel radius of the chart. Default is 10.
  chartType		{String} The type of chart: pie/bar, default: pie
  chartColor		{String} A list of colors separated by a coma, default: OpenLayers.Renderer.SVGCharts.colors.classic
- chartBarWidth	{Number} The width of the bars, default: 10
+ chartBarWidth	{Number} Width of the bars, percentage of the pointRadius, default: 0.15
  chartBackcolor	{String} The color of the back outline. Display a 3D chart.
- fontsize		{Number} If set draw label on the chart.
  chartSuffix	{String} Suffix to add to the label value
+ fontSize		{Number} If set draw label on the chart.
  
  */
  
@@ -67,7 +67,7 @@ OpenLayers.Renderer.SVGCharts = OpenLayers.Class(OpenLayers.Renderer.SVG,
 			{	// Bars
 				case "bar":
 				{	var l = chart.length;
-					var bs = style.chartBarWidth || 10;
+					var bs = 100*(style.chartBarWidth || 0.15);
 					var sc = 100 / max;
 					var txtnodes = [];
 					for (var i=0; i<chart.length; i++) if (chart[i])
