@@ -15,7 +15,7 @@
  chart			{String} A list of values separated by a coma
  pointRadius	{Number} Pixel radius of the chart. Default is 10.
  chartType		{String} The type of chart: pie/bar, default: pie
- chartColor		{String} A list of colors separated by a coma, default: OpenLayers.Renderer.SVGCharts.colors.classic
+ chartColor		{String} A list of colors separated by a coma, default: OpenLayers.Renderer.colors.classic
  chartBarWidth	{Number} Width of the bars, percentage of the pointRadius, default: 0.15
  chartBackcolor	{String} The color of the back outline. Display a 3D chart.
  chartSuffix	{String} Suffix to add to the label value
@@ -41,7 +41,7 @@ OpenLayers.Renderer.SVGCharts = OpenLayers.Class(OpenLayers.Renderer.SVG,
      */
 	setStyle : function(node, style, options)
 	{	if (node._geometryClass == "OpenLayers.Geometry.Point" && style.chart)
-		{	var color = (style.chartColor || OpenLayers.Renderer.SVGCharts.colors.classic).split(",");
+		{	var color = (style.chartColor || OpenLayers.Renderer.colors.classic).split(",");
 			var nc = color.length;
 			var chartCount = 0;
 			var max = 0;
@@ -174,7 +174,7 @@ OpenLayers.Renderer.SVGCharts = OpenLayers.Class(OpenLayers.Renderer.SVG,
      * {String} The corresponding node type for the specified geometry
      */
 	getNodeType: function(geometry, style)
-	{	if (style.chart) return "svg";
+	{	if (geometry.CLASS_NAME=="OpenLayers.Geometry.Point" && style.chart) return "svg";
 		return OpenLayers.Renderer.SVG.prototype.getNodeType.apply(this,arguments);
 	},
 
@@ -186,7 +186,7 @@ OpenLayers.Renderer.SVGCharts = OpenLayers.Class(OpenLayers.Renderer.SVG,
 */
 OpenLayers.Renderer.symbol["__chart"] = [0,0,100,100];
 
-OpenLayers.Renderer.SVGCharts.colors =
+OpenLayers.Renderer.colors =
 {	classic: "#ffa500,blue,red,green,cyan,magenta,yellow,#0f0",
 	dark: "#960,#003,#900,#060,#099,#909,#990,#090",
 	pale: "#fd0,#369,#f64,#3b7,#880,#b5d,#666",

@@ -47,6 +47,44 @@
 		var chartype = "pie";
 		var max = 0;
 		
+		function addFeatures(area)
+		{	mlayer.removeAllFeatures();
+		
+			var b = map.calculateBounds();
+			var d = 20*map.getResolution(); // inset 20px
+			// Add new stats features
+			for (var i = 0; i < 10; i++) 
+			{	var px = b.left +d + (b.right-b.left-2*d) *Math.random();
+				var py = b.bottom +d + (b.top-b.bottom-2*d) *Math.random();
+				var n, nb=0, val = "";
+				for (var k=0; k<4; k++) 
+				{	n = 1+Math.round(5*Math.random());
+					val += (val ? "," : "") + n ;
+					nb += n;
+					if (max < n) max = n;
+				}
+				if (!area)
+				{	var f = new OpenLayers.Feature.Vector( new OpenLayers.Geometry.Point(px, py), { values:val, radius:nb });
+					mlayer.addFeatures(f);
+				}
+				else
+				{	// create a polygon feature from a linear ring of points
+					var pointList = [];
+					for(var p=0; p<6; ++p) 
+					{   var a = p * (2 * Math.PI) / 7;
+						var r = (b.right-b.left)/30*(Math.random(1) + 1);
+						var newPoint = new OpenLayers.Geometry.Point(px + (r * Math.cos(a)),
+																	 py + (r * Math.sin(a)));
+					   pointList.push(newPoint);
+					}
+					pointList.push(pointList[0]);
+					var linearRing = new OpenLayers.Geometry.LinearRing(pointList);
+					var f = new OpenLayers.Feature.Vector(new OpenLayers.Geometry.Polygon([linearRing], { values:val, radius:nb }));
+					mlayer.addFeatures(f);
+				}
+			}
+		};
+		
 		function init(){
 			map = new OpenLayers.Map('map');
 
@@ -97,7 +135,7 @@
 					getSuffix: function(f)
 					{	return (chartype=="bar" ? "":"%");
 					},
-					getColor: function(f) { return OpenLayers.Renderer.SVGCharts.colors[document.getElementById('color').value]; },
+					getColor: function(f) { return OpenLayers.Renderer.colors[document.getElementById('color').value]; },
 					get3d: function(f) { return document.getElementById('set3d').checked ? "#666" : ""; },
 					getMax: function(f) { return document.getElementById('relative').checked ? max : 0; }
 				}
@@ -122,26 +160,9 @@
 				})
 			});
 			map.addLayer(mlayer);
-
 			map.zoomToMaxExtent();
 			
-			var b = map.calculateBounds();
-			var d = 20*map.getResolution(); // inset 20px
-
-			// Add new stats features
-			for (var i = 0; i < 10; i++) 
-			{	var px = b.left +d + (b.right-b.left-2*d) *Math.random();
-				var py = b.bottom +d + (b.top-b.bottom-2*d) *Math.random();
-				var n, nb=0, val = "";
-				for (var k=0; k<4; k++) 
-				{	n = 1+Math.round(5*Math.random());
-					val += (val ? "," : "") + n ;
-					nb += n;
-					if (max < n) max = n;
-				}
-				var f = new OpenLayers.Feature.Vector( new OpenLayers.Geometry.Point(px, py), { values:val, radius:nb });
-				mlayer.addFeatures(f);
-			}
+			addFeatures();			
 			
 			var selectCtrl = new OpenLayers.Control.SelectFeature(mlayer);
 			map.addControl (selectCtrl);

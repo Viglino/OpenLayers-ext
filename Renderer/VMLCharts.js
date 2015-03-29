@@ -15,7 +15,7 @@
  chart			{String} A list of values separated by a coma
  pointRadius	{Number} Pixel radius of the chart. Default is 10.
  chartType		{String} The type of chart: pie/bar, default: pie
- chartColor		{String} A list of colors separated by a coma, default: OpenLayers.Renderer.SVGCharts.colors.classic
+ chartColor		{String} A list of colors separated by a coma, default: OpenLayers.Renderer.colors.classic
  chartBarWidth	{Number} Width of the bars, percentage of the pointRadius, default: 0.15
  chartBackcolor	{String} The color of the back outline. Display a 3D chart.
  chartSuffix	{String} Suffix to add to the label value
@@ -44,7 +44,7 @@ OpenLayers.Renderer.VMLCharts = OpenLayers.Class(OpenLayers.Renderer.VML,
 		{	return OpenLayers.Renderer.VML.prototype.setStyle.apply(this,arguments);
 		}
 		
-		var color = (style.chartColor || OpenLayers.Renderer.SVGCharts.colors.classic).split(",");
+		var color = (style.chartColor || OpenLayers.Renderer.colors.classic).split(",");
 		var nc = color.length;
 		var chartCount = 0;
 		var max = 0;
@@ -160,23 +160,10 @@ OpenLayers.Renderer.VMLCharts = OpenLayers.Class(OpenLayers.Renderer.VML,
      */
 	getNodeType: function(geometry, style)
 	{	//if (style.chart) return "olv:shape";
-		if (style.chart) return "olv:group";
+		if (geometry.CLASS_NAME=="OpenLayers.Geometry.Point" && style.chart) return "olv:group";
 		return OpenLayers.Renderer.VML.prototype.getNodeType.apply(this,arguments);
 	},
 
 	CLASS_NAME: "OpenLayers.Renderer.VMLCharts"
 
 });
-
-/** A 100x100 symbol
-* /
-OpenLayers.Renderer.symbol["__chart"] = [0,0,100,100];
-
-OpenLayers.Renderer.SVGCharts.colors =
-{	classic: "orange,blue,red,green,cyan,magenta,yellow,lime",
-	dark: "#960,#003,#900,#060,#099,#909,#990,#090",
-	pale: "#fd0,#369,#f64,#3b7,#880,#b5d,#666",
-	pastel: "#fb4,#79c,#f66,#7d7,#acc,#fdd,#ff9,#b9b",
-	neon: "#ff0,#0ff,#0f0,#f0f,#f00,#00f"
-};
-*/
