@@ -26,7 +26,13 @@ pathLabelReadable: {String} Make the label readable (empty string for no)
  * 
  */
 function removeChildById(node,id)
-{	var c = node.childNodes;
+{	if (node.querySelector)	
+	{	var c = node.querySelector("#"+id);
+		if (c) node.removeChild(c);
+		return;
+	}
+	// For old browsers
+	var c = node.childNodes;
 	if (c) for (var i=0; i<c.length; i++) 
 	{	if (c[i].id == id) 
 		{	node.removeChild(c[i]);

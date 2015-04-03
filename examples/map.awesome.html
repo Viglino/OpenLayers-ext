@@ -19,14 +19,29 @@
 	<script src="../../openlayers/lib/OpenLayers.js"></script>
 	-->
 	
-	<link rel="stylesheet" href="http://fontawesome.io/assets/font-awesome/css/font-awesome.css" type="text/css">
+	<!-- Font Awesome -->
+	<link rel="stylesheet" href="http://fontawesome.io/assets/font-awesome/css/font-awesome.css" type="text/css" />
+	<script type="text/javascript" src="../Renderer/fontawesomeicons.js"></script>
+	<!-- Ionicons -->
+	<link rel="stylesheet" href="http://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css" type="text/css" />
+	<script type="text/javascript" src="../Renderer/ionicons.js"></script>
+	<!-- Glyph icons 
+	<link rel="stylesheet" href="http://glyphicons.com/wp-content/themes/glyphicons/sk/public/css/style-new.css?ver=1.0" type="text/css" />
+	<script type="text/javascript" src="../Renderer/glyphicons.js"></script>
+	-->
+	<!-- Bootstrap icons -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" type="text/css" />
+	<script type="text/javascript" src="../Renderer/bootstrapicons.js"></script>
 
-	<link rel="stylesheet" href="../Control/FullPage.css" type="text/css">
-	<script src="../Control/FullPage.js"></script>
+	<link rel="stylesheet" href="../Control/FullPage.css" type="text/css" />
+	<script type="text/javascript" src="../Control/FullPage.js"></script>
 
-	<script src="../Renderer/FASymbols.js"></script>
+	<script type="text/javascript" src="../Renderer/FASymbols.js"></script>
 
-	<style>
+	<style >
+		* { box-sizing:inherit; }
+		html { font-size:inherit; }
+		label { font-weight:normal; }
 		body { font:1em Helvetica,Arial,sans-serif; }
 		h1 { color:#369; margin:0.5em 0 0.2em }
 		#tags { color:#69F; font-size:0.9em; }
@@ -80,6 +95,7 @@
 				graphicName: "${getMarker}",
 				backgroundGraphic: "img/pinsback.png",
 				fillColor: "${getBgColor}",
+				gradient: "${getGrad}",
 				symbolYOffset: "${getOffset}",
 				rotation:0,
 				
@@ -111,8 +127,12 @@
 					{	return document.getElementById('backsym').checked ? "fa-circle" : "none";
 					},
 					getSym: function(f) 
-					{	if (!document.getElementById('fasymbol').value) return f.attributes.fa;
-						return document.getElementById('fasymbol').value;
+					{	switch(document.getElementById('fasymbol').value) 
+						{	case "fontawesome" : return f.attributes.fa;
+							case "ionicon" : return f.attributes.io;
+							case "bootstrap" : return f.attributes.bs;
+							default: return document.getElementById('fasymbol').value;
+						}
 					},
 					getFrontSym: function(f) 
 					{	return document.getElementById('frontsym').checked ? "fa-ban" : "none";
@@ -125,6 +145,11 @@
 					},
 					getSymColor: function(f) 
 					{	return document.getElementById('backsym').checked ? document.getElementById('color').value : "#fff";
+					},
+					getGrad: function(f) 
+					{	if (document.getElementById('gradient').checked)
+						 return "L-#fff-"+document.getElementById('color').value;
+						else return "";
 					},
 					getBgColor: function(f) 
 					{	return document.getElementById('color').value;
@@ -157,8 +182,12 @@
 			map.zoomToMaxExtent();
 			
 			// Get symboles
-			var ts=[];
-			for (var i in OpenLayers.Renderer.faSymbol) ts.push(i);
+			var faicon=[];
+			for (var i in OpenLayers.Renderer.fontawesomeicons) faicon.push(i);
+			var ioicon=[];
+			for (var i in OpenLayers.Renderer.ionicons) ioicon.push(i);
+			var bsicon=[];
+			for (var i in OpenLayers.Renderer.bootstrapicons) bsicon.push(i);
 			
 			// Add 10 features to the map
 			var b = map.calculateBounds();
@@ -168,7 +197,11 @@
 				var d = 20*map.getResolution(); // inset 20px
 				var px = b.left +d + (b.right-b.left-2*d) *r1 ; 
 				var py = b.bottom +d + (b.top-b.bottom-2*d) *r2 ; 
-				var f = new OpenLayers.Feature.Vector( new OpenLayers.Geometry.Point(px, py), { fa: ts[Math.floor(Math.random()*ts.length)] } );
+				var f = new OpenLayers.Feature.Vector( new OpenLayers.Geometry.Point(px, py), 
+					{ 	fa: faicon[Math.floor(Math.random()*faicon.length)],
+						io: ioicon[Math.floor(Math.random()*ioicon.length)],
+						bs: bsicon[Math.floor(Math.random()*bsicon.length)]
+					} );
 				mlayer.addFeatures(f);
 			}
 			
@@ -185,11 +218,11 @@
         <h1 id="title">OpenLayers-Ext Fontawesome example</h1>
 
         <div id="tags">
-            fontawesome, symbol, style
+            fontawesome, ionicons, symbol, style
         </div>
 
         <p id="shortdesc">
-          Display <a href="http://fontawesome.io/">Font Awesome</a> symbols on a vector layer.
+          OpenLayers 2 patch to display a font symbols on a vector layer, using <a href="http://fontawesome.io/">Font Awesome</a> or <a href="http://ionicons.com/">ionicons</a>.
         </p>
 
         <div id="map" class="smallmap" style="width:640px; height:400px;"></div>
@@ -203,7 +236,9 @@
  			<p>Options:</p>
  			Symbol:
  			<select id="fasymbol" onchange="mlayer.redraw();">
-				<option value="" selected="selected">random</option>
+				<option value="fontawesome" selected="selected">Fontawesome random</option>
+				<option value="ionicon" >Ionicons random</option>
+				<option value="bootstrap" >Bootstrap random</option>
 				<option value="fa-circle">circle</option>
 				<option value="fa-bed">bed</option>
 				<option value="fa-motorcycle">motorcycle</option>
@@ -241,7 +276,10 @@
 			<br />
 			Color: 
 			<select id="color" onchange="mlayer.redraw();">
-				<option value="#369">Petrol</option>
+				<option value="#000">Black</option>
+				<option value="#f00">Red</option>
+				<option value="#008">Blue</option>
+				<option value="#369" selected="selected">Petrol</option>
 				<option value="#f64">Tomato</option>
 				<option value="#fd0">Gold</option>
 				<option value="#b5d">Orchid</option>
@@ -249,6 +287,8 @@
 				<option value="#3b7">SeaGreen</option>
 				<option value="#880">Olive</option>
 			</select>
+			<br />
+			<input id="gradient" type="checkbox" onchange="mlayer.redraw();" /> <label for="gradient">Add a gradient</label>
 			<br />
 			<input id="stroke" type="checkbox" onchange="mlayer.redraw();" checked=checked /> <label for="stroke">stroke</label>
 			<br />
