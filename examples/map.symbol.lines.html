@@ -1,0 +1,206 @@
+﻿<!DOCTYPE html>
+<html>
+<!----------------------------------------------------------
+ 
+	Copyright (c) 2015 Jean-Marc VIGLINO, 
+	released under the CeCILL license (http://www.cecill.info/).
+	
+------------------------------------------------------------>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<title>OpenLayers-Ext - SymbolLines renderer example</title>
+
+	<link rel="stylesheet" href="http://dev.openlayers.org/theme/default/style.css" />
+	<script type="text/javascript" src="http://dev.openlayers.org/OpenLayers.js"></script>
+	<!--
+	<link rel="stylesheet" href="../../openlayers/lib/theme/default/style.css" type="text/css">
+	<script src="../../openlayers/lib/OpenLayers.js"></script>
+	-->
+	
+	<link rel="stylesheet" href="../Control/FullPage.css" type="text/css" />
+	<script type="text/javascript" src="../Control/FullPage.js"></script>
+
+	<script type="text/javascript" src="../Renderer/SVGLineSymbol.js"></script>
+
+	<style>
+		body { font:1em Helvetica,Arial,sans-serif; }
+		h1 { color:#369; margin:0.5em 0 0.2em }
+		#tags { color:#69F; font-size:0.9em; }
+		p { margin: 0.3em 0; }
+		p.title { color:#369; font-weight:bold; }
+		#map { background:#fff; float:left; border-right:10px solid transparent; }
+		#options { margin:0.5em; display:table; z-index:1; position:relative; }
+		#options ul { list-style: none; padding:0; }
+		#options li { margin:2px 0; }
+		#shortdesc { background:#e3e6e9; padding:0.5em; margin:0.5em 0; display:table; }
+		.olControlAttribution
+		{	bottom:0;
+			background:rgba(255,255,255,0.6);
+			padding: 0 0.5em;
+		}
+	</style>
+
+
+	<script type="text/javascript">
+		var map, style, mlayer, drawControl;
+		var data = {"Africa":[430493,2755157,1721973,1581084,2856910,-923604,2935182,-2802121],"Europe":[-587036,4985895,313086,5846882,1643702,6433918,3052589,7060091],"Asia":[7474930,4751081,11662456,8116756,14206280,8977743],"Australia":[12797393,-2684713,14323688,-2606442,15928254,-3232614,16632697,-4054465],"North Ameria":[-15654303,9564779,-13580108,8273299,-11897271,5964289,-11075420,2989972],"SouthAmeria":[-8375052,563555,-7122708,-493111,-6457400,-2762985,-7631473,-5502488],"Atlantic Ocean":[-313086,-6011253,-1252344,-2762985,-2856910,759233,-4774563,3185651,-6848758,4711945],"Pacific Ocean":[18354671,4711945,21642074,2950836,25633922,-688790,27982067,-5150266],"Antartica":[-547901,-15129884,3091725,-14308034,8101102,-14112355,14206280,-14855934],"Southern Ocen":[469629,-9102978,4578884,-7537547,10057890,-7028782,13814923,-7498412,17493684,-8907299],"Indian Ocean":[11271098,-4641501,10175297,-2410763,8727274,-1197554,6457400,-453975],"Artic Ocean":[5439870,13713170,1995924,12969590,-1174073,10973666,-3013453,9056014]}
+		
+		function addData()
+		{	var features = [];
+			for (var i in data)
+			{	var pts = [];
+				for (var p=0; p<data[i].length; p+=2) 
+				{	pts.push ( new OpenLayers.Geometry.Point(data[i][p],data[i][p+1]) );
+				}
+				features.push(new OpenLayers.Feature.Vector(new OpenLayers.Geometry.LineString(pts)));
+			}
+			mlayer.addFeatures(features);
+		}
+		
+		function init()
+		{	map = new OpenLayers.Map('map');
+
+			var mapbox = new OpenLayers.Layer.XYZ(
+				"Natural Earth",
+				[	"http://a.tiles.mapbox.com/v3/mapbox.natural-earth-hypso-bathy/${z}/${x}/${y}.png",
+					"http://b.tiles.mapbox.com/v3/mapbox.natural-earth-hypso-bathy/${z}/${x}/${y}.png",
+					"http://c.tiles.mapbox.com/v3/mapbox.natural-earth-hypso-bathy/${z}/${x}/${y}.png",
+					"http://d.tiles.mapbox.com/v3/mapbox.natural-earth-hypso-bathy/${z}/${x}/${y}.png"
+				], {
+					attribution: "Tiles &copy; <a href='http://mapbox.com/'>MapBox</a>",
+					sphericalMercator: true,
+					wrapDateLine: true,
+					numZoomLevels: 5
+				}
+			);
+
+			var osm = new OpenLayers.Layer.OSM();
+
+			map.addLayers([mapbox, osm]);
+
+			map.addControl(new OpenLayers.Control.FullPage());
+			map.addControl(new OpenLayers.Control.LayerSwitcher());
+			
+			// Vector layer to 
+			style = new OpenLayers.Style
+			({	pointRadius: 12,
+				fillColor:"#369",
+				
+				lineSymbol:"${getSymbol}",
+				//lineSymbolRadius:5,
+				lineSymbolReverse:"${getReverse}",
+				lineSymbolRepeat:"${getRepeat}",
+				lineSymbolOffset:"${getOffset}",
+				//lineSymbolStrokeWidth:2,
+				//lineSymbolStrokeColor:"red",
+				//lineSymbolFillColor:"green",
+							
+				stroke:true,
+				strokeWidth:1,
+				//strokeDashstyle:"dash",
+				strokeColor:"#fff"
+			},
+			{	context:
+				{	getSymbol: function() { return document.getElementById("symbol").value; },
+					getOffset: function() { return Number(document.getElementById("offset").value); },
+					getRepeat: function() { return document.getElementById("center").checked ? "center" : Number(5*document.getElementById("repeat").value); },
+					getReverse: function() { return document.getElementById("reverse").checked ? "1":""; }
+				}
+			});
+			map.addLayers([mapbox, osm]);
+			
+			mlayer = new OpenLayers.Layer.Vector ("Markers",
+			{	visibility:true,
+				rendererOptions: {yOrdering: true},
+				styleMap: new OpenLayers.StyleMap
+				({	"default": style,
+					"select": 
+					{	strokeWidth:2,
+						fontWeight:"bold",
+						zindex:1
+					}
+				})
+			});
+			addData();
+			map.addLayer(mlayer);
+			
+			map.zoomToMaxExtent();
+
+			drawControl = new OpenLayers.Control.DrawFeature(mlayer, OpenLayers.Handler.Path, 
+				{	featureAdded:function(f)
+					{	f.layer.drawFeature(f);
+						drawControl.deactivate();
+					} 
+				});
+
+            map.addControl(drawControl);
+			
+			var selectCtrl = new OpenLayers.Control.SelectFeature(mlayer);
+			map.addControl (selectCtrl);
+			selectCtrl.activate();
+		}
+
+		function toggleControl() 
+		{	if (drawControl.active) drawControl.deactivate();
+			else drawControl.activate();
+		}
+		
+	</script>
+</head>
+    <body onload="init()">
+		<a href="https://github.com/Viglino/OpenLayers-ext"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/38ef81f8aca64bb9a64448d0d70f1308ef5341ab/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6461726b626c75655f3132313632312e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png"></a>
+
+        <h1 id="title">OpenLayers-Ext TextPath renderer</h1>
+
+        <div id="tags">
+            renderer, symbols, arrow, path, style
+        </div>
+
+        <p id="shortdesc">
+			OpenLayers 2 patch to draw arrows, barbs, cicles and other symbol on lines.
+        </p>
+
+        <div id="map" class="smallmap" style="width:640px; height:400px;"></div>
+
+		<div id="options">
+
+			<ul id="controlToggle">
+				<li>
+					<button onclick="toggleControl();" value="line">Draw a line</button>
+					<button onclick="mlayer.removeAllFeatures();" value="line">Clear</button>
+				</li>
+
+				<li>
+					<label>Symbol:</label>
+					<select id="symbol" onchange="mlayer.redraw()">
+						<option value="arrow">arrow</option>
+						<option value="farrow" selected="selected">farrow</option>
+						<option value="barb">barb</option>
+						<option value="ladder">ladder</option>
+						<option value="cross">cross</option>
+						<option value="cross-x">cross-x</option>
+						<option value="circle">circle</option>
+						<option value="disk">disk</option>
+						<option value="semicircle">semicircle</option>
+						<option value="triangle">triangle</option>
+					</select>
+				</li>
+				<li>
+					<input id="reverse" type="checkbox" onchange="mlayer.redraw()" /><label for="reverse"> reverse</label>
+				</li>
+				<li>
+					<input id="center" type="checkbox" onchange="mlayer.redraw()" /><label for="center"> center</label>
+				</li>
+				<li>
+					<label>Repeat : </label><input id="repeat" type="range" min="0" max="20" value="0" onchange="document.getElementById('center').checked=false; mlayer.redraw();" />
+				</li>
+				<li>
+					<label>Offset : </label><input id="offset" type="range" min="0" max="100" value="0" onchange="mlayer.redraw()" />
+				</li>
+			</ul>
+		</div>
+
+	</body>
+</html>

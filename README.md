@@ -38,14 +38,21 @@ OpenLayers.Renderer.VMLCharts: Implements a VML based renderer to display charts
 Overwrite the SVG renderer to draw Font Awesome symbols on a vector layer.
 [View an example](http://viglino.github.io/OpenLayers-ext/examples/map.awesome.html)
 
-**Text Path rebderer**
+**Line Symbol renderer**
+
+![LineSymbol map](http://viglino.github.io/OpenLayers-ext/img/linesymbol.jpg)
+
+Overwrite the SVG renderer to to draw symbols (arrow, circle, barbs) along LineString objets in a vector layer.
+[View an example](http://viglino.github.io/OpenLayers-ext/examples/map.symbol.lines.html)
+
+**Text Path renderer**
 
 ![TextPath map](http://viglino.github.io/OpenLayers-ext/img/textpath.jpg)
 
 Overwrite the SVG renderer to display texts along LineString objets in a vector layer.
 [View an example](http://viglino.github.io/OpenLayers-ext/examples/map.textpath.html)
 
-**Boncing markers**
+**Bounce animation on markers**
 
 ![Boncing markers](http://viglino.github.io/OpenLayers-ext/img/bounce.jpg)
 
