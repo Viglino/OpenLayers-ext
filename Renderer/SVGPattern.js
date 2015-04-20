@@ -3,16 +3,15 @@
 * and the Beerware license (http://en.wikipedia.org/wiki/Beerware), 
 * feel free to use and abuse it in your projects (the code, not the beer ;-). 
 */
-/** Overwrite the SVG function to allow text along a path
-*	setStyle function 
+/** Overwrite the SVG setStyle function to draw fill polygons with pattern
 *
 *	Add new options to the Openlayers.Style
 
-pathLabel: {String} Label to draw on the path
-pathLabelXOffset: {String} Offset along the line to start drawing text in pixel or %, default: "50%"
-pathLabelYOffset: {Number} Distance of the line to draw the text
-pathLabelCurve: {String} Smooth the line the label is drawn on (empty string for no)
-pathLabelReadable: {String} Make the label readable (empty string for no)
+pattern : {String} Name of the pattern
+patternColor: {String} The pattern color, to be provided like CSS.
+patternOpacity: {Number} Pattern opacity (0-1).  Default is 1
+fillColor: {String} The fill color for the polygon, to be provided like CSS.
+fillOpacity: {number} Fill opacity for the pattern background (0-1).  Default is 1
 
 *	Extra standard values : all label and text values
 
@@ -46,7 +45,8 @@ function existPattern(defs, id)
 	return false;
 }
 
-/** http://seig.ensg.ign.fr/fichchap.php?NOFICHE=FP31&NOCHEM=CHEMS009&NOLISTE=1&N=8
+/** Patterns definitions
+	Examples : http://seig.ensg.ign.fr/fichchap.php?NOFICHE=FP31&NOCHEM=CHEMS009&NOLISTE=1&N=8
 */
 OpenLayers.Renderer.SVG.prototype.patterns =
 {
@@ -275,9 +275,17 @@ for (var angle=0; angle<90; angle+=45) for (var stroke=1; stroke<6; stroke++)
 	OpenLayers.Renderer.SVG.prototype.patterns[id].angle = angle;
 }
 
+/** 
+ * Method: getPattern
+ * Add a new pattern to the defs and return the id.
+ * 
+ * Parameters:
+ * style - {Object}
+ *
+ */ 
 OpenLayers.Renderer.SVG.prototype.getPattern = function(style)
 {	var defs = this.createDefs();
-	var id = (style.pattern+"_"+style.fillColor.replace("#","")+"_"+style.patternColor+"-"+(style.fillOpacity||0)+"-"+(style.patternOpacity||1)).replace("#","").replace(".","_");
+	var id = (style.pattern+"_"+style.fillColor.replace("#","")+"_"+style.patternColor+"-"+(style.fillOpacity||0)/*+"-"+(style.patternOpacity||1)*/).replace("#","").replace(".","_");
 
 	function setStyle (c, pattern, style)
 	{	c.style.fill = pattern.fill ? style.patternColor : "none";
@@ -348,9 +356,9 @@ OpenLayers.Renderer.SVG.prototype.setStyle = function(node, style, options)
 	setStyle.apply(this, arguments);
 	
 	// Add pattern to polygons
-	if (style.pattern && options.isFilled)
+	if (style.pattern && options.isFilled && style.patternOpacity!==0)
 	{	node.style.fill = "url(#"+this.getPattern(style)+")";
-		node.style.fillOpacity = style.patternOpacity;
+		node.style.fillOpacity = style.patternOpacity || 1;
 	}
 	return node;
 };

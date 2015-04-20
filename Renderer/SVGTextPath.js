@@ -92,8 +92,9 @@ OpenLayers.Renderer.SVG.prototype.pathText = function (node, style, suffix)
 	
 	var path = this.nodeFactory(null, "path");
 	var tpid = node._featureId+"_t"+suffix;
+	var tpath = node.getAttribute("points");
 	if (style.pathLabelCurve)
-	{	var pts = getpath (node._path, style.pathLabelReadable);
+	{	var pts = getpath (tpath, style.pathLabelReadable);
 		var p = pts[0].x+" "+pts[0].y;
 		var dx, dy, s1, s2;
 		dx = (pts[0].x-pts[1].x)/4;
@@ -119,12 +120,12 @@ OpenLayers.Renderer.SVG.prototype.pathText = function (node, style, suffix)
 	}
 	else 
 	{	if (style.pathLabelReadable)
-		{	var pts = getpath (node._path, style.pathLabelReadable);
+		{	var pts = getpath (tpath, style.pathLabelReadable);
 			var p="";
 			for (var i=0; i<pts.length; i++) p += " "+pts[i].x+" "+pts[i].y;
 			path.setAttribute("d","M "+p);
 		}
-		else path.setAttribute("d","M "+node._path);
+		else path.setAttribute("d","M "+tpath);
 	}
 	path.setAttribute("id",tpid);
 
@@ -151,7 +152,7 @@ OpenLayers.Renderer.SVG.prototype.pathText = function (node, style, suffix)
 			
 OpenLayers.Renderer.SVG.prototype.setStyle = function(node, style, options)
 {	
-	if (node._geometryClass == "OpenLayers.Geometry.LineString" && style.pathLabel && node._path)
+	if (node._geometryClass == "OpenLayers.Geometry.LineString" && style.pathLabel)
 	{	if (node._geometryClass == "OpenLayers.Geometry.LineString" && style.pathLabel)
 		{	
 		
@@ -165,10 +166,10 @@ OpenLayers.Renderer.SVG.prototype.setStyle = function(node, style, options)
 				outlineStyle.fontStrokeWidth = style.labelOutlineWidth;
 				if (style.labelOutlineOpacity) outlineStyle.fontOpacity = style.labelOutlineOpacity;
 				delete outlineStyle.labelOutlineWidth;
-				this.pathText(node, outlineStyle, "path0");
+				this.pathText(node, outlineStyle, "txtpath0");
 			}
         
-			this.pathText(node, style, "path");
+			this.pathText(node, style, "txtpath");
 
 			setStyle.apply(this,arguments);
 		}
@@ -194,28 +195,10 @@ var drawGeometry = OpenLayers.Renderer.SVG.prototype.drawGeometry;
 OpenLayers.Renderer.SVG.prototype.drawGeometry = function(geometry, style, id)
 {   var rendered = drawGeometry.apply(this,arguments);
 	if (rendered === false) 
-	{	removeChildById(this.textRoot,  id+"_path");
-		removeChildById(this.textRoot,  id+"_path0");
+	{	removeChildById(this.textRoot,  id+"_txtpath");
+		removeChildById(this.textRoot,  id+"_txtpath0");
 	}
 	return rendered;
-};
-
-/**
- * Method: drawLineString
- * Save the path to draw after.
- * 
- * Parameters: 
- * node - {DOMElement}
- * geometry - {<OpenLayers.Geometry>}
- * 
- * Returns:
- * {DOMElement} or null if the renderer could not draw all components of
- *     the linestring, or false if nothing could be drawn
- */ 
-var drawLineString = OpenLayers.Renderer.SVG.prototype.drawLineString;
-OpenLayers.Renderer.SVG.prototype.drawLineString = function(node, geometry) 
-{	drawLineString.apply(this,arguments);
-	node._path = this.getComponentsString(geometry.components).path;
 };
 
 })();
