@@ -31,6 +31,12 @@ OpenLayers.Popup.Styled =
      * {int}  Number of div in the anchorDiv
      */
     nbDiv: 2,
+
+    /** 
+     * Property: center 
+     * {bool}  The popup is centered on the point 
+     */
+    center: false,
     
     /** 
      * Constructor: OpenLayers.Popup.Styled
@@ -129,7 +135,37 @@ OpenLayers.Popup.Styled =
 
         this.updateBlocks();
     },
-   
+
+	/** 
+	* Method: calculateNewPx
+	* 
+	* Parameters:
+	* px - {<OpenLayers.Pixel>}
+	* 
+	* Returns:
+	* {<OpenLayers.Pixel>} The the new px position of the popup on the screen
+	*     relative to the passed-in px.
+	*/
+	calculateNewPx:function(px) 
+	{	var newPx = px.offset(this.anchor.offset);
+        
+		//use contentSize if size is not already set
+		var size = this.size || this.contentSize;
+
+		var top = (this.relativePosition.charAt(0) == 't');
+		newPx.y += (top) ? -size.h : this.anchor.size.h;
+        
+		if (this.center)
+		{	newPx.x += -size.w/2;
+		}
+		else
+		{	var left = (this.relativePosition.charAt(1) == 'l');
+			newPx.x += (left) ? -size.w : this.anchor.size.w;
+		}
+
+		return newPx;   
+	},
+
     CLASS_NAME: "OpenLayers.Popup.Styled"
 });
 
@@ -141,3 +177,7 @@ OpenLayers.Popup.Styled.Black = OpenLayers.Class(OpenLayers.Popup.Styled, { disp
 OpenLayers.Popup.Styled.Tips = OpenLayers.Class(OpenLayers.Popup.Styled, { displayClass:'styledTips' });
 OpenLayers.Popup.Styled.Think = OpenLayers.Class(OpenLayers.Popup.Styled, { displayClass:'styledThink' });
 OpenLayers.Popup.Styled.Warning = OpenLayers.Class(OpenLayers.Popup.Styled, { displayClass:'popWarning' });
+
+OpenLayers.Popup.Styled.Centered = OpenLayers.Class(OpenLayers.Popup.Styled, { displayClass:'styledCentered', center:true });
+OpenLayers.Popup.Styled.BlueCenter = OpenLayers.Class(OpenLayers.Popup.Styled, { displayClass:'styledBlue styledCentered', center:true });
+OpenLayers.Popup.Styled.BlackCenter = OpenLayers.Class(OpenLayers.Popup.Styled, { displayClass:'styledBlack styledCentered', center:true });

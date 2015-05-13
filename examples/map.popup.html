@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -120,7 +120,7 @@
 					var popup = new pc ("popup",
 								feature.geometry.getBounds().getCenterLonLat(),
 								new OpenLayers.Size(200,200),
-								"Hello !",
+								"Hello !<br/>"+(Math.random()>0.5 ? (new Date).toLocaleFormat() : (new Date).toISOString().replace(/T.*/,"") ), // Small or large content
 								{ size:{w:0,h:0}, offset: {x:0,y:-32} },
 								true
 					);
@@ -164,8 +164,11 @@
 			Style :
 			<select onchange="popupClass=this.value; refreshSelection();">
 				<option value="Default">Default</option>
+				<option value="Centered">Centered</option>
 				<option value="Blue">Blue</option>
+				<option value="BlueCenter">BlueCenter</option>
 				<option value="Black">Black</option>
+				<option value="BlackCenter">BlackCenter</option>
 				<option value="Tips">Tips</option>
 				<option value="Think">Think</option>
 				<option value="Warning">Warning</option>

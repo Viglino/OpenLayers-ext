@@ -303,3 +303,51 @@
 .popWarning.CssPopup_br .anchor_1
 {	left:10px;
 }
+
+/** styledCentered : popup centered on the marker
+*/
+
+/* Center popup : left 50% */
+.styledCentered .CssPopup_anchor
+{	left: 50%;
+	right: auto;
+}
+
+/* Adjust border size : -1px */
+.styledCentered.CssPopup_tl, 
+.styledCentered.CssPopup_tr,
+.styledCentered.CssPopup_bl, 
+.styledCentered.CssPopup_br { margin-left:-1px; margin-right:-1px }
+
+/* Center anchor : -width */
+.styledCentered .anchor_0
+{	left: -11px;
+}
+.styledCentered .anchor_1
+{	left: -10px;
+}
+
+/** styledBlueCenter : blue popup centered on the marker
+*/
+.styledCentered.styledBlue.CssPopup_tl, 
+.styledCentered.styledBlue.CssPopup_tr,
+.styledCentered.styledBlue.CssPopup_bl, 
+.styledCentered.styledBlue.CssPopup_br { margin-left:-3px; margin-right:-3px }
+
+.styledCentered.styledBlue .anchor_0
+{	left: -14px;
+}
+.styledCentered.styledBlue .anchor_1
+{	left: -10px;
+}
+
+/** styledBlackCenter : black popup centered on the marker
+*/
+.styledCentered.styledBlack.CssPopup_tl, 
+.styledCentered.styledBlack.CssPopup_tr,
+.styledCentered.styledBlack.CssPopup_bl, 
+.styledCentered.styledBlack.CssPopup_br { margin-left:0px; margin-right:0px }
+
+.styledCentered.styledBlack .anchor_1
+{	left: -12px;
+}
