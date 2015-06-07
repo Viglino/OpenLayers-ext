@@ -1,0 +1,152 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<title>OpenLayers-Ext Example</title>
+
+	<link rel="stylesheet" href="http://dev.openlayers.org/releases/OpenLayers-2.13.1/theme/default/style.css" />
+	<script type="text/javascript" src="http://dev.openlayers.org/releases/OpenLayers-2.13.1/OpenLayers.debug.js"></script>
+	<!--
+	<link rel="stylesheet" href="../../openlayers/lib/theme/default/style.css" type="text/css">
+	<script src="../../openlayers/lib/OpenLayers.js"></script>
+	-->
+
+	<link rel="stylesheet" href="../Control/FullPage.css" type="text/css">
+	<script src="../Control/FullPage.js"></script>
+
+	<link rel="stylesheet" href="../Popup/Styled.css" type="text/css">
+	<script src="../Popup/Styled.js"></script>
+
+	<script src="../Layer/getPreview.js"></script>
+	<script src="../../Geoportail-KISS/geoportailconfig.js"></script>
+	<script src="../../Geoportail-KISS/openlayers/geoportail.js"></script>
+
+	<style>
+		body { font:1em Helvetica,Arial,sans-serif; }
+		h1 { color:#369; margin:0.5em 0 0.2em }
+		#tags { color:#69F; font-size:0.9em; }
+		p { margin: 0.3em 0; }
+		p.title { color:#369; font-weight:bold; }
+		#map { background:#fff; float:left; border-right:10px solid transparent; }
+		#options { margin:0.5em; display:table; }
+		#docs { background:#e3e6e9; padding:0.5em; margin:0.5em 0; display:table; }
+		.olControlAttribution
+		{	bottom:0;
+			background:rgba(255,255,255,0.6);
+			padding: 0 0.5em;
+		}
+	</style>
+
+	<script type="text/javascript">
+		var map;
+		var popupClass = "Default";
+		
+		function init(){
+			map = new OpenLayers.Map('map', { projection:"EPSG:3857" });
+			map.addControl(new OpenLayers.Control.LayerSwitcher());
+
+			var mapbox = new OpenLayers.Layer.XYZ(
+				"Natural Earth",
+				[	"http://a.tiles.mapbox.com/v3/mapbox.natural-earth-hypso-bathy/${z}/${x}/${y}.png",
+					"http://b.tiles.mapbox.com/v3/mapbox.natural-earth-hypso-bathy/${z}/${x}/${y}.png",
+					"http://c.tiles.mapbox.com/v3/mapbox.natural-earth-hypso-bathy/${z}/${x}/${y}.png",
+					"http://d.tiles.mapbox.com/v3/mapbox.natural-earth-hypso-bathy/${z}/${x}/${y}.png"
+				], {
+					attribution: "Tiles &copy; <a href='http://mapbox.com/'>MapBox</a>",
+					sphericalMercator: true,
+					wrapDateLine: true,
+					numZoomLevels: 5
+				}
+			);
+
+			var osm = new OpenLayers.Layer.OSM();
+			map.addLayers([osm, mapbox]);
+
+			// Layer BRGM
+			map.addLayer ( new OpenLayers.Layer.WMS( "Geologie", "http://geoservices.brgm.fr/geologie", 
+				{	layers: "SCAN_D_GEOL50",
+					format: "image/png",
+					transparent: true
+				},
+				{	isBaseLayer: false,
+					minScale: 200000,
+					maxScale: 10000,
+					visibility: false
+				}));
+			
+			// Layer SANDRE
+			map.addLayer ( new OpenLayers.Layer.WMS( "SANDRE", "http://services.sandre.eaufrance.fr/geo/eth_FXX", 
+				{	layers: "services.sandre.eaufrance.fr:eth_FXX",
+					format: "image/png",
+					transparent: true
+				},
+				{	isBaseLayer: false,
+					visibility: false
+				}));
+			
+			// Layers IGN
+			map.addLayers(
+				[	new OpenLayers.Layer.Geoportail("ORTHOIMAGERY.ORTHOPHOTOS",{ key:"optui97glo4zd4ow3hfxp0ge" }),
+					new OpenLayers.Layer.Geoportail("CADASTRALPARCELS.PARCELS",{ key:"optui97glo4zd4ow3hfxp0ge" }),
+					new OpenLayers.Layer.Geoportail("GEOGRAPHICALGRIDSYSTEMS.ETATMAJOR40",{ key:"optui97glo4zd4ow3hfxp0ge" }),
+					new OpenLayers.Layer.Geoportail("GEOGRAPHICALGRIDSYSTEMS.MAPS",{ key:"optui97glo4zd4ow3hfxp0ge" }),
+					new OpenLayers.Layer.Geoportail("GEOGRAPHICALGRIDSYSTEMS.MAPS.SCAN-EXPRESS.STANDARD",{ key:"optui97glo4zd4ow3hfxp0ge" }),
+					new OpenLayers.Layer.Geoportail("TRANSPORTNETWORKS.ROADS",{ key:"optui97glo4zd4ow3hfxp0ge" }),
+					new OpenLayers.Layer.Geoportail("TRANSPORTNETWORKS.RAILWAYS",{ key:"optui97glo4zd4ow3hfxp0ge" }),
+					new OpenLayers.Layer.Geoportail("BUILDINGS.BUILDINGS",{ key:"optui97glo4zd4ow3hfxp0ge" })
+				]);
+
+			//map.zoomToMaxExtent();
+			map.setCenter(new OpenLayers.LonLat(20179,6354668), 11);
+			
+			var select = document.getElementById('layers');
+			for (var i = 0; i<map.layers.length; i++)
+			{	var opt = document.createElement('option');
+				opt.value = i;
+				opt.innerHTML = map.layers[i].name;
+				select.appendChild(opt);
+			}
+			
+			showPreview(0);
+		}
+		
+		function showPreview (n)
+		{	var img = map.layers[n].getPreview(new OpenLayers.LonLat(20179,6354668), 11);
+			if (img) document.getElementById("preview").src = img.src;
+			else document.getElementById("preview").src = "";
+		}
+	</script>
+</head>
+    <body onload="init()">
+		<a href="https://github.com/Viglino/OpenLayers-ext"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/38ef81f8aca64bb9a64448d0d70f1308ef5341ab/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6461726b626c75655f3132313632312e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png"></a>
+
+        <h1 id="title">OpenLayers-Ext Layer getPreview</h1>
+
+        <div id="tags">
+            preview, layer
+        </div>
+
+        <p id="shortdesc">
+          OpenLayers.Layer.getPreview() function.
+        </p>
+
+        <div id="map" class="smallmap" style="width:640px; height:400px;"></div>
+
+		<div id="docs">
+			<p>
+			Add a getPreview() function to OpenLayers.Layer to get a preview Image of the layer (WMTS, WMS, XYZ).
+			</p>
+			<hr/>
+			<p>
+			Layer:
+			<select id="layers" onchange="showPreview(this.value);">
+			</select>
+			</p>
+			<div style="width:256px; height:128px; overflow:hidden; border:2px solid #fff; box-shadow:3px 3px 5px 0 #000;">
+				<img id="preview" style="position:relative; top:-100%;" />
+			</div>
+		</div>
+    </body>
+</html>
