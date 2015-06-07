@@ -201,4 +201,23 @@ OpenLayers.Renderer.SVG.prototype.drawGeometry = function(geometry, style, id)
 	return rendered;
 };
 
+/** 
+* Method: eraseGeometry
+* Erase a geometry from the renderer. In the case of a multi-geometry, 
+*     we cycle through and recurse on ourselves. Otherwise, we look for a 
+*     node with the geometry.id, destroy its geometry, and remove it from
+*     the DOM.
+* 
+* Parameters:
+* geometry - {<OpenLayers.Geometry>}
+* featureId - {String}
+*/
+var eraseGeometry = OpenLayers.Renderer.SVG.prototype.eraseGeometry;
+OpenLayers.Renderer.SVG.prototype.eraseGeometry = function(geometry, featureId)
+{   eraseGeometry.apply(this,arguments);
+	removeChildById(this.textRoot,  featureId+"_txtpath");
+	removeChildById(this.textRoot,  featureId+"_txtpath0");
+	console.log("eraseGeometry");
+};
+
 })();
