@@ -1,7 +1,8 @@
 OpenLayers-ext
 ==============
 
-Extension for the OpenLayers library
+## Extension for the OpenLayers 2
+> If you're looking for ol extensions (Openlayers 3 / 4) see the [ol-ext project](https://github.com/Viglino/ol-ext).
 
 **OpenLayers.Control.FullPage :**
 The FullPageButton control is a very simple push-button. When clicked, it adds a olFullPageMap style to the map to display the map at fixed position and fill the browser window.
