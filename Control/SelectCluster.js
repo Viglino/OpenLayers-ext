@@ -141,7 +141,7 @@ OpenLayers.Control.SelectCluster = OpenLayers.Class(OpenLayers.Control.SelectFea
 		{	
 			// Pixel size in map unit
 			var pix = feature.layer.map.resolution;
-			var cluster = new Array();;
+			var cluster = new Array();
 			if (layer && layer.getFeaturesInCluster)
 			{	cluster = layer.getFeaturesInCluster(feature);
 			}
